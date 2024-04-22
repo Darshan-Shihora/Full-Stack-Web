@@ -1,20 +1,11 @@
 import img from "../../src/assests/icons8-b-96.png";
-import { Link, NavLink, useNavigate } from "react-router-dom";
-import { auth, provider } from "../components/FIreBase-config";
-import { signOut } from "firebase/auth";
-import { signInWithPopup } from "firebase/auth";
-import { useEffect, useState } from "react";
+import {  NavLink } from "react-router-dom";
 import Login from "../components/Login";
 import { useAuth0 } from "@auth0/auth0-react";
 
 function Header() {
-  const { user, isAuthenticated, isLoading, logout } = useAuth0();
-  const navigate = useNavigate();
-  function navigateTo() {
-    signOut(auth).then(() => {
-      navigate("/sign-up");
-    });
-  }
+  const {  isAuthenticated, logout } = useAuth0();
+
   return (
     <nav className=" bg-sky-400 flex justify-between px-4 sticky top-0 z-10 items-center">
       <span className="text-3xl flex items-center font-bold pt-2">
