@@ -84,7 +84,9 @@ const BlogForm: React.FC<{ method: FormMethod; blog: any }> = (props) => {
           Cancel
         </button>
         <button
-          className={`py-3 px-5 ${isSubmitting ? 'w-32' : 'w-24'} rounded hover:bg-sky-600 bg-sky-400 text-white`}
+          className={`py-3 px-5 ${
+            isSubmitting ? "w-32" : "w-24"
+          } rounded hover:bg-sky-600 bg-sky-400 text-white`}
           disabled={isSubmitting}
         >
           {isSubmitting ? "Submitting" : "Save"}
