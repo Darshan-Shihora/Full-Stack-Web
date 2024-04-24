@@ -17,11 +17,10 @@ function Home() {
         </main>
       </div>
       <p className="pt-8 px-8 max-w-[36rem] m-auto text-gray-400">
-        I'm a paragraph. Click here to add your own text and edit me. It’s easy.
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi cumque animi
       </p>
       <p className="text-gray-400">
-        Just click “Edit Text” or double click me to add your own content and
-        make changes to the font.
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsa veniam quia pariatur nihil non. Quis.
       </p>
       <div className="relative m-auto mt-8 mb-12">
         <img className="m-auto" src={image} alt="" />

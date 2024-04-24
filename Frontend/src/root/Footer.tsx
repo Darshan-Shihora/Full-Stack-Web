@@ -7,9 +7,7 @@ function Footer() {
       <div className="text-start">
         <p className="font-bold text-2xl">About Me</p>
         <p className="text-md font-normal font-serif py-2">
-          I'm a paragraph. Click here to add your own text and edit me. It’s
-          easy. Just click “Edit Text” or double click me to add your own
-          content and make changes to the font.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda autem aliquam odio odit atque culpa debitis veniam tempore quia natus deserunt possimus iste ducimus nisi asperiores, at iure dolorum cumque eligendi. Mollitia optio sunt blanditiis culpa delectus, non consequuntur explicabo.
         </p>
         <Link to="/about-me" className="underline">
           Read more

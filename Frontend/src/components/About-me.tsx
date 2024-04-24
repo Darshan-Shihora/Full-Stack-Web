@@ -6,22 +6,13 @@ function AboutMe() {
       <div className="flex">
         <div className="flex-col text-start font-serif pr-20">
           <p className="pb-4">
-            I'm a paragraph. Click here to add your own text and edit me. It’s
-            easy. Just click “Edit Text” or double click me to add your own
-            content and make changes to the font. Feel free to drag and drop me
-            anywhere you like on your page. I’m a great place for you to tell a
-            story and let your users know a little more about you.
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odit, voluptatum corporis. Ea nemo quas modi sit eveniet, deserunt soluta itaque beatae quisquam architecto accusantium odit, ipsa ex veritatis? Adipisci libero ducimus deleniti recusandae nobis voluptate dolorum assumenda rerum dicta! Eius delectus nulla sequi eum unde mollitia molestias voluptate doloribus error!
           </p>
           <p className="pb-4">
-            This is a great space to write long text about your company and your
-            services. You can use this space to go into a little more detail
-            about your company. Talk about your team and what services you
-            provide.
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Sed inventore, error corrupti magnam cumque est repudiandae distinctio sunt nam nihil earum nemo aliquid expedita, cum, amet corporis maxime nulla perferendis atque similique nostrum suscipit ipsa? Tempore nobis consequuntur dolores reprehenderit.
           </p>
           <p className="pb-4">
-            Tell your visitors the story of how you came up with the idea for
-            your business and what makes you different from your competitors.
-            Make your company stand out and show your visitors who you are.
+            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quaerat facilis odio cum, labore reprehenderit ea dolores repellat omnis possimus atque deserunt itaque natus officia praesentium similique sunt impedit nihil laboriosam autem! Itaque aperiam assumenda quasi beatae impedit aspernatur voluptas amet nam. Officia, quo voluptatibus nulla porro dolorum voluptatum ea sapiente sint quasi minima beatae odio facilis aliquam? Vel nihil illo atque voluptatem necessitatibus totam, in accusamus quaerat a, ipsam cupiditate?
           </p>
           <p>Contact me:</p>
           <a

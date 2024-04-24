@@ -5,24 +5,21 @@ import blogRouter from "./src/routes/blog.routes";
 
 const app = express();
 
-// const corsOptions = {
-//   origin: function (origin: any, callback: any) {
-//     console.log(origin);
-//     console.log(SERVER.CORS_ALLOWED_ORIGIN?.split(",").indexOf(origin));
-//     if (SERVER.CORS_ALLOWED_ORIGIN?.split(",").indexOf(origin) !== -1) {
-//       callback(null, true);
-//     } else {
-//       console.log(`Error due to not allowed by CORS`);
-//       callback(new Error("Not allowed by CORS"));
-//     }
-//   },
-// };
-
-const corsOptions = "http://localhost:3001";
+const allowedDomains = process.env.CORS_ALLOWED_ORIGIN?.split(",");
+const corsOptions = {
+  origin: function (origin: any, callback: any) {
+    if (!origin) return callback(null, true);
+    if (allowedDomains?.indexOf(origin) === -1) {
+      const msg = `This site ${origin} does not have an access. Only specific domains are allowed to access it.`;
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+};
 
 app.use(cors(corsOptions));
 app.use(express.json());
-app.use(blogRouter)
+app.use(blogRouter);
 app.listen(process.env.DB_PORT, () => {
   console.log(`Port started listning ${process.env.DB_PORT}`);
 });
