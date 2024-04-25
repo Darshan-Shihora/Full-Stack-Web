@@ -1,3 +1,4 @@
+import axios from "axios";
 import {
   ActionFunction,
   Form,
@@ -99,7 +100,9 @@ const BlogForm: React.FC<{ method: FormMethod; blog: any }> = (props) => {
 export default BlogForm;
 
 export const action: ActionFunction = async ({ request, params }) => {
+
   const method = request.method;
+
   const data = await request.formData();
 
   const blogData = {
@@ -108,29 +111,23 @@ export const action: ActionFunction = async ({ request, params }) => {
     date: data.get("date"),
     description: data.get("description"),
   };
-  let url = "https://blog-website-c5959-default-rtdb.firebaseio.com/blogs.json";
 
+  let url = "http://localhost:3001/blog";
   if (method === "PATCH") {
     const blogId = params.blogId;
-    url =
-      "https://blog-website-c5959-default-rtdb.firebaseio.com/blogs/" +
-      blogId +
-      ".json";
+    url = `http://localhost:3001/blog/${blogId}`;
   }
-
-  const response = await fetch(url, {
+  const response = await axios({
+    url: url,
     method: method,
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(blogData),
+    data: blogData,
   });
 
-  if (!response.ok) {
-    throw json({ message: "Could not save event." }, { status: 500 });
-  }
-  if (method === "PATCH") {
+  if (response.status === 200) {
     return redirect("..");
+  }
+  if (response.status !== 201) {
+    throw json({ message: "Could not save event." }, { status: 500 });
   }
   return redirect("/blog");
 };

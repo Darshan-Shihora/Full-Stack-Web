@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Blog from "./Blog";
 import { NavLink } from "react-router-dom";
+import axios from "axios";
 
 type Blogs = {
-  id: string;
+  blog_id: string;
   image: string;
   title: string;
   date: string;
 };
-
 // const BLOGS: Blogs[] = [
 //   {
 //     id: "the-girl-from-ipanema",
@@ -38,35 +38,24 @@ function BlogList() {
     setIsLoading(true);
     try {
       const fetchBlogs = async () => {
-        const response = await fetch(
-          "https://blog-website-c5959-default-rtdb.firebaseio.com/blogs.json"
-        );
-        if (!response.ok) {
-          throw new Error("Something went wrong!");
-        }
-        const responseData = await response.json();
+        try {
+          const response = await axios.get("http://localhost:3001");
 
-        const loadedBlogs = [];
-        for (const key in responseData) {
-          loadedBlogs.push({
-            id: key,
-            image: responseData[key].image,
-            date: responseData[key].date,
-            title: responseData[key].title,
-          });
+          setBlogs(response.data.data);
+        } catch (error) {
+          console.log(error.message);
         }
-        setBlogs(loadedBlogs);
       };
       fetchBlogs();
     } catch (error: any) {
       console.log(error.message);
     }
-  }, []);
+  }, [setBlogs]);
 
   const blog = blogs.map((blog) => (
     <Blog
-      key={blog.id}
-      id={blog.id}
+      key={blog.blog_id}
+      id={blog.blog_id}
       date={blog.date}
       image={blog.image}
       title={blog.title}

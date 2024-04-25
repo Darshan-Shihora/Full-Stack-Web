@@ -22,7 +22,7 @@ exports.Blog = index_1.sequelize.define("blog", {
         allowNull: false,
     },
     description: {
-        type: sequelize_1.DataTypes.STRING,
+        type: sequelize_1.DataTypes.TEXT,
         allowNull: false,
     },
 });

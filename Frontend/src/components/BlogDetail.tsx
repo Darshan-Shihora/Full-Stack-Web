@@ -8,10 +8,11 @@ import {
 } from "react-router-dom";
 import BlogItem from "./BlogItem";
 import { Suspense } from "react";
+import axios from "axios";
 
 function BlogDetail() {
   const blog: any = useRouteLoaderData("blog-detail");
-  
+
   return (
     <Suspense fallback={<p style={{ textAlign: "center" }}>Loading...</p>}>
       <Await resolve={blog}>
@@ -24,20 +25,12 @@ function BlogDetail() {
 export default BlogDetail;
 
 async function loadEvent(id: string) {
-  const response = await fetch(
-    "https://blog-website-c5959-default-rtdb.firebaseio.com/blogs/" +
-      id +
-      ".json"
-  );
-
-  const resData = await response.json();
-  console.log(resData);
-  return resData;
+  const response = await axios.get(`http://localhost:3001/blog/${id}`);
+  return response.data.data;
 }
 
 export const loader = async ({ params }: { params: any }) => {
   const id = params.blogId;
-  console.log(id);
 
   return defer({
     blog: await loadEvent(id),
@@ -46,16 +39,15 @@ export const loader = async ({ params }: { params: any }) => {
 
 export const action: ActionFunction = async ({ request, params }) => {
   const blogId = params.blogId;
-  const response = await fetch(
-    "https://blog-website-c5959-default-rtdb.firebaseio.com/blogs/" +
-      blogId +
-      ".json",
-    {
-      method: request.method,
-    }
-  );
+  const url = `http://localhost:3001/blog/${blogId}`;
+  const method = request.method;
 
-  if (!response.ok) {
+  const response = await axios({
+    url: url,
+    method: method,
+  });
+
+  if (response.status !== 200) {
     throw json(
       { message: "Could not delete event." },
       {
