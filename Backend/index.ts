@@ -2,6 +2,7 @@ import express from "express";
 import "dotenv/config";
 import cors from "cors";
 import blogRouter from "./src/routes/blog.routes";
+import userRouter from "./src/routes/user.routes";
 
 const app = express();
 
@@ -19,6 +20,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
+app.use(userRouter);
 app.use(blogRouter);
 app.listen(process.env.DB_PORT, () => {
   console.log(`Port started listning ${process.env.DB_PORT}`);

@@ -1,91 +1,91 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, redirect, useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "./FIreBase-config";
+import axios from "axios";
 
 function Signup() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [userExist, setUserExist] = useState("");
   const navigate = useNavigate();
-  const [values, setValues] = useState({
-    name: "",
-    email: "",
-    pass: "",
-  });
-  const [errorMsg, setErrorMsg] = useState("");
-  const [submitButtonDisabled, setSubmitButtonDisabled] = useState(false);
 
-  const handleSubmission = () => {
-    if (!values.name || !values.email || !values.pass) {
-      setErrorMsg("Fill all fields");
-      return;
+  const nameInputHandler = (event) => {
+    setName(event.target.value);
+  };
+
+  const emailInputHandler = (event) => {
+    setEmail(event.target.value);
+  };
+
+  const passwordInputHandler = (event) => {
+    setPassword(event.target.value);
+  };
+  const handleSubmission = async () => {
+    const response = await axios.post("http://localhost:3001/sign-up", {
+      name: name,
+      email: email,
+      password: password,
+    });
+    console.log(response);
+    if (response.status === 201) {
+      navigate("..");
     }
-    setErrorMsg("");
-
-    setSubmitButtonDisabled(true);
-    createUserWithEmailAndPassword(auth, values.email, values.pass)
-    .then(async (res) => {
-      setSubmitButtonDisabled(false);
-      const user = res.user;
-      await updateProfile(user, {
-        displayName: values.name,
-      });
-      localStorage.setItem('email', values.email)
-        navigate(window.location.origin);
-      })
-      .catch((err) => {
-        setSubmitButtonDisabled(false);
-        setErrorMsg(err.message);
-      });
+    if (response.status === 200) {
+      setUserExist(response.data.message);
+      console.log(response.data.message);
+    }
   };
 
   return (
     <div className="h-full w-full  min-h-screen flex justify-center items-center">
       <div className="min-w-[480px] bg-gray-100 h-fit w-fit p-8 rounded-xl flex flex-col gap-5">
         <h1 className="text-3xl font-semibold">Signup</h1>
-        <label className="font-bold text-xl text-sky-500" htmlFor="Name">
+        <label className="font-bold text-xl text-sky-500" htmlFor="name">
           Name
         </label>
         <input
-          className="rounded-md border-gray-400 border outline-none py-3 px-4 text-black hover:border-sky-400"
-          id="Name"
+          className="rounded-md focus:bg-sky-50 border-gray-400 border outline-none py-3 px-4 text-black hover:border-sky-400"
+          id="name"
+          name="name"
           type="text"
           placeholder="Enter your name"
-          onChange={(event) =>
-            setValues((prev) => ({ ...prev, name: event.target.value }))
-          }
+          onChange={nameInputHandler}
+          value={name}
         />
-        <label className="text-xl font-bold text-sky-500" htmlFor="Email">
+        <label className="text-xl font-bold text-sky-500" htmlFor="email">
           Email
         </label>
         <input
-          className="rounded-md border-gray-400 border outline-none py-3 px-4 text-black   hover:border-sky-400"
-          id="Email"
+          className="rounded-md focus:bg-sky-50 border-gray-400 border outline-none py-3 px-4 text-black   hover:border-sky-400"
+          id="email"
+          name="email"
           type="email"
           placeholder="Enter email address"
-          onChange={(event) =>
-            setValues((prev) => ({ ...prev, email: event.target.value }))
-          }
+          onChange={emailInputHandler}
+          value={email}
         />
-        <label className="text-xl font-bold text-sky-500" htmlFor="Password">
+        <label className="text-xl font-bold text-sky-500" htmlFor="password">
           Password
         </label>
         <input
-          className="rounded-md border-gray-400 border outline-none py-3 px-4 text-black  hover:border-sky-400"
-          id="Password"
+          className="rounded-md focus:bg-sky-50 border-gray-400 border outline-none py-3 px-4 text-black  hover:border-sky-400"
+          id="password"
+          name="password"
           type="password"
-          placeholder="Enter password"
-          onChange={(event) =>
-            setValues((prev) => ({ ...prev, pass: event.target.value }))
-          }
+          placeholder={`Enter password`}
+          onChange={passwordInputHandler}
+          value={password}
         />
 
         <div className="flex flex-col gap-5">
           <b className="font-bold text-xs items-center text-red-400">
-            {errorMsg}
+            {userExist}
           </b>
           <button
-            className="outline-none border-none rounded-md font-bold text-lg py-3 px-4 w-full cursor-pointer transition-colors bg-sky-300 text-white hover:bg-sky-400 disabled:bg-gray-200"
+            className="outline-none  border-none rounded-md font-bold text-lg py-3 px-4 w-full cursor-pointer transition-colors bg-sky-300 text-white hover:bg-sky-400 disabled:bg-gray-200"
             onClick={handleSubmission}
-            disabled={submitButtonDisabled}
           >
             Signup
           </button>
