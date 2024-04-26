@@ -1,15 +1,6 @@
-import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-// function Login() {
-//   const { loginWithRedirect } = useAuth0();
-
-//   return <button className="p-3 text-center w-20 font-semibold text-white bg-gray-600 hover:bg-gray-500" onClick={() => loginWithRedirect()}>Log In</button>;
-// }
-// onChange={(event) =>
-//   setUser((prev) => ({ ...prev, email: event.target.value }))
-// }
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -30,11 +21,11 @@ function Login() {
         email: email,
         password: password,
       });
+
       console.log(response);
       if (response.status === 202) {
+        localStorage.setItem("Token", response.data.data.token);
         navigate("..");
-      }
-      if (response.status === 403) {
       }
     } catch (error) {
       if (error.response.status === 403) {

@@ -3,7 +3,6 @@ import {
   ActionFunction,
   Form,
   FormMethod,
-  json,
   redirect,
   useNavigate,
   useNavigation,
@@ -100,7 +99,6 @@ const BlogForm: React.FC<{ method: FormMethod; blog: any }> = (props) => {
 export default BlogForm;
 
 export const action: ActionFunction = async ({ request, params }) => {
-
   const method = request.method;
 
   const data = await request.formData();
@@ -111,23 +109,29 @@ export const action: ActionFunction = async ({ request, params }) => {
     date: data.get("date"),
     description: data.get("description"),
   };
-
+  const token = localStorage.getItem("Token");
   let url = "http://localhost:3001/blog";
   if (method === "PATCH") {
     const blogId = params.blogId;
     url = `http://localhost:3001/blog/${blogId}`;
   }
-  const response = await axios({
-    url: url,
-    method: method,
-    data: blogData,
-  });
-
-  if (response.status === 200) {
+  try {
+    const response = await axios({
+      url: url,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      method: method,
+      data: blogData,
+    });
+    console.log(response);
     return redirect("..");
+  } catch (error) {
+    console.log(error);
+    if (error.request.responseURL === "http://localhost:3001/blog") {
+      return redirect("../../login");
+    } else {
+      return redirect("../../../login");
+    }
   }
-  if (response.status !== 201) {
-    throw json({ message: "Could not save event." }, { status: 500 });
-  }
-  return redirect("/blog");
 };

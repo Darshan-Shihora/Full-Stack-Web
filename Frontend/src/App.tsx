@@ -1,6 +1,9 @@
 import {
   ActionFunction,
+  Route,
   RouterProvider,
+  Routes,
+  BrowserRouter as Router,
   createBrowserRouter,
 } from "react-router-dom";
 import Root from "./root/Root";
@@ -65,6 +68,37 @@ function App() {
       <RouterProvider router={router} />
     </>
   );
+
+  // return (
+  //   <Routes>
+  //     <Route path="/" element={<Root />}>
+  //       <Route path="" element={<Home />} />
+  //       <Route path="blog">
+  //         <Route path="" element={<BlogList />} />
+  //         <Route path=":blogId" id="blog-detail" loader={blogDetailLoader}>
+  //           <Route
+  //             path=""
+  //             element={<BlogDetail />}
+  //             action={deleteBlogAction as ActionFunction}
+  //           />
+  //           <Route
+  //             path="edit"
+  //             element={<EditBlog />}
+  //             action={manipulateBlogAction as ActionFunction}
+  //           />
+  //         </Route>
+  //         <Route
+  //           path="new"
+  //           element={<AddBlog />}
+  //           action={manipulateBlogAction as ActionFunction}
+  //         />
+  //       </Route>
+  //       <Route path="about-me" element={<AboutMe />}></Route>
+  //     </Route>
+  //     <Route path="sign-up" element={<Signup />} />
+  //     <Route path="login" element={<Login />} />
+  //   </Routes>
+  // );
 }
 
 export default App;

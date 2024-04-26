@@ -1,11 +1,17 @@
 import img from "../../src/assests/icons8-b-96.png";
-import {  Link, NavLink } from "react-router-dom";
-import Login from "../components/Login";
-import { useAuth0 } from "@auth0/auth0-react";
+import { Link, NavLink, redirect, useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 function Header() {
-  // const {  isAuthenticated, logout } = useAuth0();
-
+  const navigate = useNavigate();
+  const [isAuthenticated, setisAuthenticated] = useState(
+    localStorage.getItem("Token")
+  );
+  const logoutHandler = () => {
+    setisAuthenticated(null);
+    localStorage.removeItem("Token");
+    return navigate("/login");
+  };
   return (
     <nav className=" bg-sky-400 flex justify-between px-4 sticky top-0 z-10 items-center">
       <span className="text-3xl flex items-center font-bold pt-2">
@@ -45,31 +51,21 @@ function Header() {
         </NavLink>
       </div>
       <div className="flex">
-        {/* <button
-          // onClick={navigateTo}
-          className="p-3 text-center w-20 font-semibold text-white bg-gray-600 hover:bg-gray-500 "
-        >
-          Logout
-        </button> */}
-        <Link
-          to="/login"
-          // onClick={handleClick}
-          className="p-3 mr-3 font-semibold text-white bg-gray-600 hover:bg-gray-500 "
-          >
-          Log In
-        </Link>
-        {/* {isAuthenticated ? (
+        {isAuthenticated ? (
           <button
             className="p-3 text-center w-24 font-semibold text-white bg-gray-600 hover:bg-gray-500"
-            onClick={() =>
-              logout({ logoutParams: { returnTo: window.location.origin } })
-            }
+            onClick={logoutHandler}
           >
             Log Out
           </button>
         ) : (
-          <Login />
-        )} */}
+          <Link
+            to="/login"
+            className="p-3 mr-3 font-semibold text-white bg-gray-600 hover:bg-gray-500 "
+          >
+            Log In
+          </Link>
+        )}
       </div>
     </nav>
   );

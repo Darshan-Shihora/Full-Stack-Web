@@ -2,7 +2,8 @@ import { NextFunction, Request, Response } from "express";
 import { User } from "../models/user.model";
 import { StatusCodes } from "http-status-codes";
 import bcrypt from "bcryptjs";
-import { where } from "sequelize";
+import jwt from "jsonwebtoken";
+import "dotenv/config";
 
 export const postSignUp = async (
   req: Request,
@@ -45,11 +46,21 @@ export const postLogin = async (
   } else {
     const decodePassword = await bcrypt.compare(password, checkUser.password);
     if (decodePassword) {
+      const token = jwt.sign(
+        {
+          userName: checkUser.name,
+          userId: checkUser.user_id.toString(),
+        },
+        process.env.SECRET_KEY as string,
+        { expiresIn: "24h" }
+      );
+      res.setHeader("Authorization", token);
       res.status(StatusCodes.ACCEPTED).send({
         message: "User successfully loggedIn",
         data: {
           name: checkUser.name,
           email: checkUser.email,
+          token: token,
         },
       });
     } else {

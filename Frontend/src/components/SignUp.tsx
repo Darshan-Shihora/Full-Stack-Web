@@ -30,7 +30,7 @@ function Signup() {
     });
     console.log(response);
     if (response.status === 201) {
-      navigate("..");
+      navigate("/login");
     }
     if (response.status === 200) {
       setUserExist(response.data.message);

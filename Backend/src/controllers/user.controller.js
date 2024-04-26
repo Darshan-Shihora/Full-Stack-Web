@@ -16,6 +16,8 @@ exports.postLogin = exports.postSignUp = void 0;
 const user_model_1 = require("../models/user.model");
 const http_status_codes_1 = require("http-status-codes");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+require("dotenv/config");
 const postSignUp = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { name, email, password } = req.body;
     const existingUser = yield user_model_1.User.findOne({ where: { email: email } });
@@ -51,11 +53,17 @@ const postLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, function
     else {
         const decodePassword = yield bcryptjs_1.default.compare(password, checkUser.password);
         if (decodePassword) {
+            const token = jsonwebtoken_1.default.sign({
+                userName: checkUser.name,
+                userId: checkUser.user_id.toString(),
+            }, process.env.SECRET_KEY, { expiresIn: "24h" });
+            res.setHeader("Authorization", token);
             res.status(http_status_codes_1.StatusCodes.ACCEPTED).send({
                 message: "User successfully loggedIn",
                 data: {
                     name: checkUser.name,
                     email: checkUser.email,
+                    token: token,
                 },
             });
         }

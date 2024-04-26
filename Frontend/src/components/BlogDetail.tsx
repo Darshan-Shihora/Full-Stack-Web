@@ -2,7 +2,6 @@ import {
   ActionFunction,
   Await,
   defer,
-  json,
   redirect,
   useRouteLoaderData,
 } from "react-router-dom";
@@ -12,7 +11,6 @@ import axios from "axios";
 
 function BlogDetail() {
   const blog: any = useRouteLoaderData("blog-detail");
-
   return (
     <Suspense fallback={<p style={{ textAlign: "center" }}>Loading...</p>}>
       <Await resolve={blog}>
@@ -25,8 +23,20 @@ function BlogDetail() {
 export default BlogDetail;
 
 async function loadEvent(id: string) {
-  const response = await axios.get(`http://localhost:3001/blog/${id}`);
-  return response.data.data;
+  const token = localStorage.getItem("Token");
+  try {
+    const response = await axios({
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      url: `http://localhost:3001/blog/${id}`,
+    });
+    return response.data.data;
+  } catch (error) {
+    console.log(error);
+    return redirect("../../login");
+  }
 }
 
 export const loader = async ({ params }: { params: any }) => {
@@ -41,19 +51,18 @@ export const action: ActionFunction = async ({ request, params }) => {
   const blogId = params.blogId;
   const url = `http://localhost:3001/blog/${blogId}`;
   const method = request.method;
-
-  const response = await axios({
-    url: url,
-    method: method,
-  });
-
-  if (response.status !== 200) {
-    throw json(
-      { message: "Could not delete event." },
-      {
-        status: 500,
-      }
-    );
+  const token = localStorage.getItem("Token");
+  try {
+    const response = await axios({
+      url: url,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      method: method,
+    });
+    console.log(response);
+    return redirect("..");
+  } catch (error) {
+    return redirect("../../login");
   }
-  return redirect("/blog");
 };
