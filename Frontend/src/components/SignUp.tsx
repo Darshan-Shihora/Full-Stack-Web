@@ -1,7 +1,5 @@
-import { useEffect, useState } from "react";
-import { Link, redirect, useNavigate } from "react-router-dom";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { auth } from "./FIreBase-config";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function Signup() {
