@@ -12,10 +12,27 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteBlog = exports.editBlog = exports.postBlog = exports.getBlog = exports.getAllBlog = void 0;
 const blog_model_1 = require("../models/blog.model");
 const http_status_codes_1 = require("http-status-codes");
+const index_1 = require("../models/index");
+const sequelize_1 = require("sequelize");
 // GET ALL BLOGS
 const getAllBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const blogs = yield blog_model_1.Blog.findAll();
-    console.log(blogs);
+    const blogs = yield index_1.sequelize.query(`select 
+    blog.blog_id,
+    blog.title,
+    blog.image,
+    blog.date,
+    blog.description,
+    u.user_id,
+    u.name
+  from
+    blogs as blog
+  left join users as u on
+    blog.user_id = u.user_id
+    where u.user_id = :userId ;`, {
+        replacements: { userId: +req.userId },
+        type: sequelize_1.QueryTypes.SELECT,
+        raw: true,
+    });
     if (blogs && blogs.length > 0) {
         res.status(http_status_codes_1.StatusCodes.OK).send({
             message: "Blog found Successfully",
@@ -59,6 +76,7 @@ const postBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
             image: image,
             date: date,
             description: description,
+            user_id: +req.userId,
         });
         res.status(http_status_codes_1.StatusCodes.CREATED).send({
             message: "Blog successfully created",

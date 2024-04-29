@@ -18,7 +18,7 @@ const Blog: React.FC<{
       <div className="flex m-auto my-6 ml-6">
         <img className="size-14 mr-2" src={img} alt="" />
         <div className="text-start items-center text-gray-400">
-          <p>Admin</p>
+          <p>{localStorage.getItem("name")}</p>
           <p>{props.date}</p>
         </div>
       </div>

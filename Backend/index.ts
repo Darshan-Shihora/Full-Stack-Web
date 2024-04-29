@@ -3,6 +3,8 @@ import "dotenv/config";
 import cors from "cors";
 import blogRouter from "./src/routes/blog.routes";
 import userRouter from "./src/routes/user.routes";
+import { User } from "./src/models/user.model";
+import { Blog } from "./src/models/blog.model";
 
 const app = express();
 
@@ -22,6 +24,16 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(userRouter);
 app.use(blogRouter);
+
+User.hasMany(Blog, {
+  foreignKey: "user_id",
+  as: "blog",
+});
+
+Blog.belongsTo(User, {
+  foreignKey: "user_id",
+  as: "user",
+});
 app.listen(process.env.DB_PORT, () => {
   console.log(`Port started listning ${process.env.DB_PORT}`);
 });

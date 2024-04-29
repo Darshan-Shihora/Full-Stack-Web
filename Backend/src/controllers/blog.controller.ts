@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import { Blog, BlogType } from "../models/blog.model";
+import { Blog } from "../models/blog.model";
 import { StatusCodes } from "http-status-codes";
+import { sequelize } from "../models/index";
+import { QueryTypes } from "sequelize";
 
 // GET ALL BLOGS
 export const getAllBlog = async (
@@ -8,8 +10,27 @@ export const getAllBlog = async (
   res: Response,
   next: NextFunction
 ) => {
-  const blogs = await Blog.findAll();
-  console.log(blogs);
+  const blogs = await sequelize.query(
+    `select 
+    blog.blog_id,
+    blog.title,
+    blog.image,
+    blog.date,
+    blog.description,
+    u.user_id,
+    u.name
+  from
+    blogs as blog
+  left join users as u on
+    blog.user_id = u.user_id
+    where u.user_id = :userId ;`,
+    {
+      replacements: { userId: +req.userId! },
+      type: QueryTypes.SELECT,
+      raw: true,
+    }
+  );
+
   if (blogs && blogs.length > 0) {
     res.status(StatusCodes.OK).send({
       message: "Blog found Successfully",
@@ -59,6 +80,7 @@ export const postBlog = async (
       image: image,
       date: date,
       description: description,
+      user_id: +req.userId!,
     });
     res.status(StatusCodes.CREATED).send({
       message: "Blog successfully created",

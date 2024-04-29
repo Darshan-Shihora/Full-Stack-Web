@@ -17,16 +17,18 @@ function Home() {
         </main>
       </div>
       <p className="pt-8 px-8 max-w-[36rem] m-auto text-gray-400">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi cumque animi
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi cumque
+        animi
       </p>
       <p className="text-gray-400">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsa veniam quia pariatur nihil non. Quis.
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsa veniam
+        quia pariatur nihil non. Quis.
       </p>
       <div className="relative m-auto mt-8 mb-12">
         <img className="m-auto" src={image} alt="" />
         <Link
           className={`absolute bottom-[45%] right-[45%] rounded bg-white px-10 py-4 text-2xl font-serif text-sky-600 hover:text-white hover:bg-sky-500`}
-          to="/blog"
+          to={localStorage.getItem("name") ? "/blog" : "/login"}
         >
           Travel
         </Link>

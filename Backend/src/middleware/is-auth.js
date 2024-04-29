@@ -13,7 +13,7 @@ const isAuth = (req, res, next) => {
     let decodedToken;
     if (!token) {
         res.status(http_status_codes_1.StatusCodes.UNAUTHORIZED).send({
-            message: "Token is not set"
+            message: "Token is not set",
         });
     }
     try {

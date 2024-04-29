@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -6,7 +6,7 @@ function Signup() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [userExist, setUserExist] = useState("");
+  const [errMsg, setErrMsg] = useState("");
   const navigate = useNavigate();
 
   const nameInputHandler = (event) => {
@@ -20,19 +20,28 @@ function Signup() {
   const passwordInputHandler = (event) => {
     setPassword(event.target.value);
   };
+
   const handleSubmission = async () => {
-    const response = await axios.post("http://localhost:3001/sign-up", {
-      name: name,
-      email: email,
-      password: password,
-    });
-    console.log(response);
-    if (response.status === 201) {
-      navigate("/login");
-    }
-    if (response.status === 200) {
-      setUserExist(response.data.message);
-      console.log(response.data.message);
+    if (
+      name.trim().length === 0 ||
+      email.trim().length === 0 ||
+      password.trim().length === 0
+    ) {
+      setErrMsg("Fields can't be empty");
+    } else {
+      const response = await axios.post("http://localhost:3001/signup", {
+        name: name,
+        email: email,
+        password: password,
+      });
+      console.log(response);
+      if (response.status === 201) {
+        navigate("/login");
+      }
+      if (response.status === 200) {
+        setErrMsg(response.data.message);
+        console.log(response.data.message);
+      }
     }
   };
 
@@ -79,7 +88,7 @@ function Signup() {
 
         <div className="flex flex-col gap-5">
           <b className="font-bold text-xs items-center text-red-400">
-            {userExist}
+            {errMsg}
           </b>
           <button
             className="outline-none  border-none rounded-md font-bold text-lg py-3 px-4 w-full cursor-pointer transition-colors bg-sky-300 text-white hover:bg-sky-400 disabled:bg-gray-200"

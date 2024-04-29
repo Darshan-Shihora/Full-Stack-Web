@@ -9,7 +9,7 @@ function Header() {
   );
   const logoutHandler = () => {
     setisAuthenticated(null);
-    localStorage.removeItem("Token");
+    localStorage.clear();
     return navigate("/");
   };
   return (
@@ -35,7 +35,7 @@ function Header() {
               ? "text-cyan-700 mx-6 text-xl font-bold"
               : "mx-6 text-xl font-normal"
           }
-          to="/blog"
+          to={localStorage.getItem("name") ? "/blog" : "/login"}
         >
           Blog
         </NavLink>
@@ -52,12 +52,15 @@ function Header() {
       </div>
       <div className="flex">
         {isAuthenticated ? (
-          <button
-            className="p-3 text-center w-24 font-semibold text-white bg-gray-600 hover:bg-gray-500"
-            onClick={logoutHandler}
-          >
-            Log Out
-          </button>
+          <div className="flex gap-4">
+            <p className=" py-2">{localStorage.getItem("name")}</p>
+            <button
+              className="p-3 text-center w-24 font-semibold text-white bg-gray-600 hover:bg-gray-500"
+              onClick={logoutHandler}
+            >
+              Log Out
+            </button>
+          </div>
         ) : (
           <Link
             to="/login"

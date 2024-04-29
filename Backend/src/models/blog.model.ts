@@ -1,13 +1,14 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../models/index";
+import { User } from "./user.model";
 
 export type BlogType = {
-  blog_id: number,
-  image: string,
-  title: string,
-  date: Date,
-  description: string,
-}
+  blog_id: number;
+  image: string;
+  title: string;
+  date: Date;
+  description: string;
+};
 
 export const Blog = sequelize.define("blog", {
   blog_id: {
@@ -30,5 +31,12 @@ export const Blog = sequelize.define("blog", {
   description: {
     type: DataTypes.TEXT,
     allowNull: false,
+  },
+  user_id: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: User,
+      key: "user_id",
+    },
   },
 });

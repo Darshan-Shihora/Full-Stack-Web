@@ -9,6 +9,8 @@ require("dotenv/config");
 const cors_1 = __importDefault(require("cors"));
 const blog_routes_1 = __importDefault(require("./src/routes/blog.routes"));
 const user_routes_1 = __importDefault(require("./src/routes/user.routes"));
+const user_model_1 = require("./src/models/user.model");
+const blog_model_1 = require("./src/models/blog.model");
 const app = (0, express_1.default)();
 const allowedDomains = (_a = process.env.CORS_ALLOWED_ORIGIN) === null || _a === void 0 ? void 0 : _a.split(",");
 const corsOptions = {
@@ -26,6 +28,14 @@ app.use((0, cors_1.default)(corsOptions));
 app.use(express_1.default.json());
 app.use(user_routes_1.default);
 app.use(blog_routes_1.default);
+user_model_1.User.hasMany(blog_model_1.Blog, {
+    foreignKey: "user_id",
+    as: "blog",
+});
+blog_model_1.Blog.belongsTo(user_model_1.User, {
+    foreignKey: "user_id",
+    as: "user",
+});
 app.listen(process.env.DB_PORT, () => {
     console.log(`Port started listning ${process.env.DB_PORT}`);
 });
