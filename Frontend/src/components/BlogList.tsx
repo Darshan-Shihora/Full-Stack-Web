@@ -33,7 +33,19 @@ type Blogs = {
 function BlogList() {
   const [blogs, setBlogs] = useState<Blogs[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
+  // const isUserLoggedIn = () => {
+  //   const token = localStorage.getItem("Token");
+  //   if (token !== null) {
+  //     console.log(token);
+  //     setIsLoggedIn(true);
+  //     console.log(isLoggedIn);
+  //   } else {
+  //     console.log(token);
+  //     setIsLoggedIn(false);
+  //   }
+  // };
   useEffect(() => {
     setIsLoading(true);
     try {
@@ -46,6 +58,14 @@ function BlogList() {
           console.log(error.message);
         }
       };
+
+      const token = localStorage.getItem("Token");
+      if (token !== null) {
+        setIsLoggedIn(true);
+        console.log(isLoggedIn);
+      } else {
+        setIsLoggedIn(false);
+      }
       fetchBlogs();
     } catch (error: any) {
       console.log(error.message);
@@ -72,13 +92,25 @@ function BlogList() {
   }
 
   return (
-    <div className="min-h-[3  0rem]">
-      <NavLink
-        to="new"
+    <div className="min-h-[30rem]">
+      {/* <NavLink
+        to={isLoggedIn ? "new" : "/login"}
         className="bg-sky-500 w-32 my-4 p-4 text-xl block m-auto items-center text-center text-white hover:bg-sky-600 rounded"
+        onClick={isUserLoggedIn}
       >
         Add Blog
-      </NavLink>
+      </NavLink> */}
+      {isLoggedIn ? (
+        <NavLink
+          to="new"
+          className="bg-sky-500 w-32 my-4 p-4 text-xl block m-auto items-center text-center text-white hover:bg-sky-600 rounded"
+        >
+          Add Blog
+        </NavLink>
+      ) : (
+        ""
+      )}
+
       {content}
     </div>
   );

@@ -1,5 +1,5 @@
 import img from "../../src/assests/icons8-b-96.png";
-import { Link, NavLink, redirect, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 function Header() {
@@ -10,7 +10,7 @@ function Header() {
   const logoutHandler = () => {
     setisAuthenticated(null);
     localStorage.removeItem("Token");
-    return navigate("/login");
+    return navigate("/");
   };
   return (
     <nav className=" bg-sky-400 flex justify-between px-4 sticky top-0 z-10 items-center">

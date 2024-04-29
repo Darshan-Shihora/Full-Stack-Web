@@ -35,7 +35,7 @@ async function loadEvent(id: string) {
     return response.data.data;
   } catch (error) {
     console.log(error);
-    return redirect("../../login");
+    throw redirect("../../login");
   }
 }
 
@@ -63,6 +63,7 @@ export const action: ActionFunction = async ({ request, params }) => {
     console.log(response);
     return redirect("..");
   } catch (error) {
-    return redirect("../../login");
+    console.log("Can't delete the blog");
+    throw error;
   }
 };

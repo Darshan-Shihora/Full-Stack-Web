@@ -129,9 +129,13 @@ export const action: ActionFunction = async ({ request, params }) => {
   } catch (error) {
     console.log(error);
     if (error.request.responseURL === "http://localhost:3001/blog") {
-      return redirect("../../login");
+      console.log("error can't add the blog");
+      throw error;
+      // return redirect("../../login");
     } else {
-      return redirect("../../../login");
+      console.log("error can't edit the blog");
+      throw error;
+      // return redirect("../../../login");
     }
   }
 };
