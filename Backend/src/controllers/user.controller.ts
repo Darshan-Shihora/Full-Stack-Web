@@ -49,7 +49,7 @@ export const postLogin = async (
       const token = jwt.sign(
         {
           userName: checkUser.name,
-          userId: checkUser.user_id.toString(),
+          userId: checkUser.user_id,
         },
         process.env.SECRET_KEY as string,
         { expiresIn: "24h" }

@@ -6,7 +6,10 @@ import axios from "axios";
 type Blogs = {
   blog_id: string;
   image: string;
+  name: string;
   title: string;
+  canBeLiked: string;
+  likes: number;
   date: string;
 };
 // const BLOGS: Blogs[] = [
@@ -40,19 +43,20 @@ function BlogList() {
       const fetchBlogs = async () => {
         try {
           const token = localStorage.getItem("Token");
-          const response = await axios({
+
+          const blogresponse = await axios({
             method: "GET",
             url: "http://localhost:3001",
             headers: {
               Authorization: `Bearer ${token}`,
             },
           });
-          setBlogs(response.data.data);
+          setBlogs(blogresponse.data.data);
+          console.log(blogresponse.data.data);
         } catch (error) {
           console.log(error.message);
         }
       };
-
       fetchBlogs();
     } catch (error: any) {
       console.log(error.message);
@@ -63,9 +67,12 @@ function BlogList() {
     <Blog
       key={blog.blog_id}
       id={blog.blog_id}
+      name={blog.name}
       date={blog.date}
       image={blog.image}
       title={blog.title}
+      canBeLiked={blog.canBeLiked}
+      likes={blog.likes}
     />
   ));
 

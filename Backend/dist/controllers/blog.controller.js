@@ -23,17 +23,47 @@ const getAllBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
     blog.date,
     blog.description,
     u.user_id,
-    u.name
+    u.name,
+    count(l.user_id) as likes,
+    CASE 
+          WHEN EXISTS (
+              SELECT 1 
+              FROM likes l2 
+              WHERE l2.blog_id = blog.blog_id 
+                AND l2.user_id = ${req.userId ? req.userId : null}
+          ) THEN 'false' 
+          ELSE 'true' 
+      END AS canBeLiked
   from
     blogs as blog
   left join users as u on
     blog.user_id = u.user_id
-    where u.user_id = :userId ;`, {
-        replacements: { userId: +req.userId },
+  left join likes l on
+    l.blog_id = blog.blog_id
+    group by blog.blog_id 
+  limit 10 offset 0`, {
+        // replacements: { userId: req.userId! },
         type: sequelize_1.QueryTypes.SELECT,
         raw: true,
     });
+    // const blogs = await Blog.findAll({
+    //   attributes: ["blog_id", "title", "image", "date", "description"],
+    //   group: ["blog_id", "like_id"],
+    //   include: [
+    //     {
+    //       model: User,
+    //       as: "user",
+    //       attributes: ["name", "user_id"],
+    //     },
+    //     {
+    //       model: Like,
+    //       as: "like",
+    //       attributes: ["user_id"],
+    //     },
+    //   ],
+    // });
     if (blogs && blogs.length > 0) {
+        console.log(req.userId);
         res.status(http_status_codes_1.StatusCodes.OK).send({
             message: "Blog found Successfully",
             data: blogs,
@@ -102,7 +132,7 @@ const editBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
         editBlog.description = description;
         editBlog.date = date;
         editBlog.image = image;
-        editBlog.save();
+        yield editBlog.save();
         res.status(http_status_codes_1.StatusCodes.OK).send({
             message: "Blog edited Successfully",
             data: editBlog,
@@ -127,7 +157,7 @@ const deleteBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
             message: "Blog deleted successfully",
             data: blog,
         });
-        blog.destroy();
+        yield blog.destroy();
     }
     else {
         res.status(http_status_codes_1.StatusCodes.BAD_REQUEST).send({
@@ -137,3 +167,4 @@ const deleteBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
     }
 });
 exports.deleteBlog = deleteBlog;
+//# sourceMappingURL=blog.controller.js.map

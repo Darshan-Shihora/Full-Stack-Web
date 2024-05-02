@@ -9,3 +9,4 @@ const userRouter = express_1.default.Router();
 userRouter.post("/signup", user_controller_1.postSignUp);
 userRouter.post("/login", user_controller_1.postLogin);
 exports.default = userRouter;
+//# sourceMappingURL=user.routes.js.map

@@ -1,15 +1,60 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import img from "../assests/icons8-administrator-male-96.png";
-import heartImg from "../assests/icons8-heart-16.png";
+import heartWithoutColor from "../assests/icons8-heart-noColor.png";
+import heartWithColor from "../assests/icons8-heart-withColor.png";
 import eyeImg from "../assests/icons8-eye-16.png";
 import messageImg from "../assests/icons8-message-16.png";
+import axios from "axios";
+import { useEffect, useState } from "react";
 
 const Blog: React.FC<{
   id: string;
   image: string;
+  name: string;
   title: string;
+  canBeLiked: string;
+  likes: number;
   date: string;
 }> = (props) => {
+  const [liked, setLiked] = useState(props.canBeLiked);
+  const [count, setCount] = useState(props.likes);
+  const navigate = useNavigate();
+
+  const likesHandler = async () => {
+    try {
+      const token = localStorage.getItem("Token");
+      if (!token) {
+        return navigate("../login");
+      } else {
+        const postData = await axios({
+          method: "POST",
+          url: `http://localhost:3001/like/${props.id}`,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const response = await axios({
+          method: "GET",
+          url: `http://localhost:3001/like/${props.id}`,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setLiked(response.data.data[0].canBeLiked);
+        setCount(response.data.data[0].likes);
+        console.log(postData.data);
+        console.log(response.data.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    likesHandler();
+    console.log(liked);
+  }, []);
+
   return (
     <div className=" block m-auto h-auto w-[55vw] border-2 border-gray-100 my-8 pb-4 box-border shadow-sm">
       <Link to={`/blog/${props.id}`}>
@@ -18,7 +63,7 @@ const Blog: React.FC<{
       <div className="flex m-auto my-6 ml-6">
         <img className="size-14 mr-2" src={img} alt="" />
         <div className="text-start items-center text-gray-400">
-          <p>{localStorage.getItem("name")}</p>
+          <p>{props.name}</p>
           <p>{props.date}</p>
         </div>
       </div>
@@ -43,8 +88,13 @@ const Blog: React.FC<{
           <img className="pr-[4px] w-6" src={messageImg} alt="" />2
         </p>
         <p className="flex ml-[80%] ">
-          <img className="pr-[4px] w-6" src={heartImg} alt="" />
-          48
+          <img
+            className="pr-[4px] w-6 cursor-pointer"
+            src={liked === "true" ? heartWithoutColor : heartWithColor}
+            onClick={likesHandler}
+            alt=""
+          />
+          {count}
         </p>
       </div>
     </div>

@@ -35,7 +35,7 @@ function Header() {
               ? "text-cyan-700 mx-6 text-xl font-bold"
               : "mx-6 text-xl font-normal"
           }
-          to={localStorage.getItem("name") ? "/blog" : "/login"}
+          to="/blog"
         >
           Blog
         </NavLink>

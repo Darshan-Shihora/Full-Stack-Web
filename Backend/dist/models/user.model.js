@@ -23,3 +23,4 @@ exports.User = index_1.sequelize.define("user", {
         allowNull: false,
     },
 });
+//# sourceMappingURL=user.model.js.map

@@ -27,3 +27,4 @@ const dbConnection = () => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 dbConnection();
+//# sourceMappingURL=index.js.map

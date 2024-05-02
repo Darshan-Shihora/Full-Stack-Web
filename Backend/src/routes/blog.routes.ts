@@ -10,7 +10,7 @@ import { isAuth } from "../middleware/is-auth";
 
 const blogRouter = express.Router();
 
-blogRouter.get("/", isAuth, getAllBlog);
+blogRouter.get("/",isAuth, getAllBlog);
 
 blogRouter.get("/blog/:blog_id", isAuth, getBlog);
 

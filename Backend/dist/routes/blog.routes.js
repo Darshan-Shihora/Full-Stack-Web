@@ -13,3 +13,4 @@ blogRouter.post("/blog", is_auth_1.isAuth, blog_controller_1.postBlog);
 blogRouter.patch("/blog/:blog_id", is_auth_1.isAuth, blog_controller_1.editBlog);
 blogRouter.delete("/blog/:blog_id", is_auth_1.isAuth, blog_controller_1.deleteBlog);
 exports.default = blogRouter;
+//# sourceMappingURL=blog.routes.js.map

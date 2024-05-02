@@ -55,7 +55,7 @@ const postLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, function
         if (decodePassword) {
             const token = jsonwebtoken_1.default.sign({
                 userName: checkUser.name,
-                userId: checkUser.user_id.toString(),
+                userId: checkUser.user_id,
             }, process.env.SECRET_KEY, { expiresIn: "24h" });
             res.setHeader("Authorization", token);
             res.status(http_status_codes_1.StatusCodes.ACCEPTED).send({
@@ -76,3 +76,4 @@ const postLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, function
     }
 });
 exports.postLogin = postLogin;
+//# sourceMappingURL=user.controller.js.map

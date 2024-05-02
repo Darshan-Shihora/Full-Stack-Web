@@ -34,3 +34,4 @@ exports.Blog = index_1.sequelize.define("blog", {
         },
     },
 });
+//# sourceMappingURL=blog.model.js.map
