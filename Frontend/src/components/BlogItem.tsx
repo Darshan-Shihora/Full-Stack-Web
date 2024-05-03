@@ -7,8 +7,6 @@ import heartWithColor from "../assests/icons8-heart-withColor.png";
 import axios from "axios";
 import { useEffect, useState } from "react";
 const BlogItem: React.FC<{ blog: any }> = (props) => {
-  console.log(props.blog);
-
   const submit = useSubmit();
 
   function deleteHandler() {
