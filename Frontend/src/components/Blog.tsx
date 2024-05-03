@@ -16,8 +16,8 @@ const Blog: React.FC<{
   likes: number;
   date: string;
 }> = (props) => {
-  const [liked, setLiked] = useState(props.canBeLiked);
-  const [count, setCount] = useState(props.likes);
+  const [liked, setLiked] = useState("");
+  const [count, setCount] = useState(0);
   const navigate = useNavigate();
 
   const likesHandler = async () => {
@@ -33,8 +33,8 @@ const Blog: React.FC<{
             Authorization: `Bearer ${token}`,
           },
         });
-        setLiked((prev) => (prev === props.canBeLiked ? props.canBeLiked : ""));
-        setCount((prev) => (prev === props.likes ? props.likes : 0));
+        setLiked((prev) => (prev === "" ? props.canBeLiked : ""));
+        setCount((prev) => (prev === 0 ? props.likes : 0));
       }
     } catch (error) {
       console.log(error);
