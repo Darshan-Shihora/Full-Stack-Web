@@ -11,8 +11,9 @@ export const getAllBlog = async (
   next: NextFunction
 ) => {
   const userId = +req.userId;
-  const userIdParam = userId === undefined ? null : `'${userId}'`;
-
+  // const userIdParam = userId === undefined ? null : `'${userId}'`;
+  const offset = +req.query.offset;
+  const limit = +req.query.limit;
   const blogs = await sequelize.query(
     `select 
     blog.blog_id,
@@ -28,7 +29,7 @@ export const getAllBlog = async (
               SELECT 1 
               FROM likes l2 
               WHERE l2.blog_id = blog.blog_id 
-                AND l2.user_id =?
+                AND l2.user_id = :userId
           ) THEN 'false' 
           ELSE 'true' 
       END AS canBeLiked
@@ -40,18 +41,20 @@ export const getAllBlog = async (
     l.blog_id = blog.blog_id
     group by blog.blog_id 
   order by blog.updatedAt DESC
-  limit 5 offset 0`,
+  limit :limit offset :offset`,
     {
-      replacements: [userIdParam],
+      replacements: { userId, offset, limit },
       type: QueryTypes.SELECT,
       raw: true,
     }
   );
+  const blog = await Blog.findAll();
   if (blogs && blogs.length > 0) {
     console.log(req.userId);
     res.status(StatusCodes.OK).send({
       message: "Blog found Successfully",
       data: blogs,
+      length: blog.length,
     });
   } else {
     res.status(StatusCodes.NOT_FOUND).send({

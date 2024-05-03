@@ -38,6 +38,15 @@ type Blogs = {
 function BlogList() {
   const [blogs, setBlogs] = useState<Blogs[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [length, setLength] = useState(0);
+  const [offset, setOffset] = useState(0);
+  const handlePrevPage = () => {
+    setOffset((prevOffset) => Math.max(0, prevOffset - 5));
+  };
+
+  const handleNextPage = () => {
+    setOffset((prevOffset) => prevOffset + 5);
+  };
 
   useEffect(() => {
     setIsLoading(true);
@@ -52,8 +61,13 @@ function BlogList() {
             headers: {
               Authorization: `Bearer ${token}`,
             },
+            params: {
+              limit: 5,
+              offset: offset,
+            },
           });
           setBlogs(blogresponse.data.data);
+          setLength(blogresponse.data.length);
         } catch (error) {
           console.log(error.message);
         }
@@ -62,7 +76,12 @@ function BlogList() {
     } catch (error: any) {
       console.log(error.message);
     }
-  }, []);
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "smooth",
+    });
+  }, [offset]);
 
   const blog = blogs.map((blog) => (
     <Blog
@@ -98,10 +117,20 @@ function BlogList() {
       </NavLink>
       {content}
       <div className="text-2xl flex justify-center mb-6">
-        <button className="bg-blue-400 mr-2 w-8 h-8 rounded hover:bg-blue-500 cursor-not-allowed">
+        <button
+          className={`bg-blue-400 mr-2 w-8 h-8 rounded hover:bg-blue-500 ${
+            offset === 0 ? "invisible" : ""
+          } `}
+          onClick={handlePrevPage}
+        >
           <FontAwesomeIcon icon={faAngleLeft} />
         </button>
-        <button className="bg-blue-400 ml-2 w-8 h-8 rounded hover:bg-blue-500 cursor-not-allowed">
+        <button
+          className={`bg-blue-400 ml-2 w-8 h-8 rounded hover:bg-blue-500 ${
+            offset + 5 >= length ? "invisible" : ""
+          } `}
+          onClick={handleNextPage}
+        >
           <FontAwesomeIcon icon={faAngleRight} />
         </button>
       </div>

@@ -17,7 +17,9 @@ const sequelize_1 = require("sequelize");
 // GET ALL BLOGS
 const getAllBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = +req.userId;
-    const userIdParam = userId === undefined ? null : `'${userId}'`;
+    // const userIdParam = userId === undefined ? null : `'${userId}'`;
+    const offset = +req.query.offset;
+    const limit = +req.query.limit;
     const blogs = yield index_1.sequelize.query(`select 
     blog.blog_id,
     blog.title,
@@ -32,7 +34,7 @@ const getAllBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
               SELECT 1 
               FROM likes l2 
               WHERE l2.blog_id = blog.blog_id 
-                AND l2.user_id =?
+                AND l2.user_id = :userId
           ) THEN 'false' 
           ELSE 'true' 
       END AS canBeLiked
@@ -44,16 +46,18 @@ const getAllBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
     l.blog_id = blog.blog_id
     group by blog.blog_id 
   order by blog.updatedAt DESC
-  limit 5 offset 0`, {
-        replacements: [userIdParam],
+  limit :limit offset :offset`, {
+        replacements: { userId, offset, limit },
         type: sequelize_1.QueryTypes.SELECT,
         raw: true,
     });
+    const blog = yield blog_model_1.Blog.findAll();
     if (blogs && blogs.length > 0) {
         console.log(req.userId);
         res.status(http_status_codes_1.StatusCodes.OK).send({
             message: "Blog found Successfully",
             data: blogs,
+            length: blog.length,
         });
     }
     else {
