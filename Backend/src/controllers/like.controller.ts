@@ -17,7 +17,6 @@ export const postLike = async (
     if (existingLike) {
       res.send({
         message: "User Unliked the blog",
-        // data: response,
       });
       await existingLike.destroy();
     } else {
@@ -73,7 +72,6 @@ export const getLike = async (
       raw: true,
     }
   );
-  // console.log(response);
 
   res.send({
     message: "Liked a particular blog",

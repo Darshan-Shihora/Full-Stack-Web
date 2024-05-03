@@ -23,7 +23,6 @@ const postLike = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
         if (existingLike) {
             res.send({
                 message: "User Unliked the blog",
-                // data: response,
             });
             yield existingLike.destroy();
         }
@@ -74,7 +73,6 @@ const getLike = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
         type: sequelize_1.QueryTypes.SELECT,
         raw: true,
     });
-    // console.log(response);
     res.send({
         message: "Liked a particular blog",
         data: response,

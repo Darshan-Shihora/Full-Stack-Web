@@ -10,6 +10,9 @@ export const getAllBlog = async (
   res: Response,
   next: NextFunction
 ) => {
+  const userId = +req.userId;
+  const userIdParam = userId === undefined ? null : `'${userId}'`;
+
   const blogs = await sequelize.query(
     `select 
     blog.blog_id,
@@ -25,7 +28,7 @@ export const getAllBlog = async (
               SELECT 1 
               FROM likes l2 
               WHERE l2.blog_id = blog.blog_id 
-                AND l2.user_id = ${req.userId !== undefined ? req.userId : null}
+                AND l2.user_id =?
           ) THEN 'false' 
           ELSE 'true' 
       END AS canBeLiked
@@ -39,7 +42,7 @@ export const getAllBlog = async (
   order by blog.updatedAt DESC
   limit 5 offset 0`,
     {
-      // replacements: { userId: req.userId! },
+      replacements: [userIdParam],
       type: QueryTypes.SELECT,
       raw: true,
     }

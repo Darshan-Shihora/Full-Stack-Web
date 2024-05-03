@@ -16,6 +16,8 @@ const index_1 = require("../models/index");
 const sequelize_1 = require("sequelize");
 // GET ALL BLOGS
 const getAllBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = +req.userId;
+    const userIdParam = userId === undefined ? null : `'${userId}'`;
     const blogs = yield index_1.sequelize.query(`select 
     blog.blog_id,
     blog.title,
@@ -30,7 +32,7 @@ const getAllBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
               SELECT 1 
               FROM likes l2 
               WHERE l2.blog_id = blog.blog_id 
-                AND l2.user_id = ${req.userId !== undefined ? req.userId : null}
+                AND l2.user_id =?
           ) THEN 'false' 
           ELSE 'true' 
       END AS canBeLiked
@@ -43,7 +45,7 @@ const getAllBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
     group by blog.blog_id 
   order by blog.updatedAt DESC
   limit 5 offset 0`, {
-        // replacements: { userId: req.userId! },
+        replacements: [userIdParam],
         type: sequelize_1.QueryTypes.SELECT,
         raw: true,
     });

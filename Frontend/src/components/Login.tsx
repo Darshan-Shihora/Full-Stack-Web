@@ -22,7 +22,6 @@ function Login() {
         password: password,
       });
 
-      console.log(response);
       if (response.status === 202) {
         localStorage.setItem("name", response.data.data.name);
         localStorage.setItem("Token", response.data.data.token);
