@@ -26,24 +26,15 @@ const Blog: React.FC<{
       if (!token) {
         return navigate("../login");
       } else {
-        const postData = await axios({
+        await axios({
           method: "POST",
           url: `http://localhost:3001/like/${props.id}`,
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        const response = await axios({
-          method: "GET",
-          url: `http://localhost:3001/like/${props.id}`,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setLiked(response.data.data[0].canBeLiked);
-        setCount(response.data.data[0].likes);
-        console.log(postData.data);
-        console.log(response.data.data);
+        setLiked((prev) => (prev === props.canBeLiked ? props.canBeLiked : ""));
+        setCount((prev) => (prev === props.likes ? props.likes : 0));
       }
     } catch (error) {
       console.log(error);
@@ -51,9 +42,24 @@ const Blog: React.FC<{
   };
 
   useEffect(() => {
-    likesHandler();
-    console.log(liked);
-  }, []);
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem("Token");
+        const postData = await axios({
+          method: "GET",
+          url: `http://localhost:3001/like/${props.id}`,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setLiked(() => postData.data.data[0].canBeLiked);
+        setCount(() => postData.data.data[0].likes);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, [liked, count]);
 
   return (
     <div className=" block m-auto h-auto w-[55vw] border-2 border-gray-100 my-8 pb-4 box-border shadow-sm">
@@ -88,12 +94,13 @@ const Blog: React.FC<{
           <img className="pr-[4px] w-6" src={messageImg} alt="" />2
         </p>
         <p className="flex ml-[80%] ">
-          <img
-            className="pr-[4px] w-6 cursor-pointer"
-            src={liked === "true" ? heartWithoutColor : heartWithColor}
-            onClick={likesHandler}
-            alt=""
-          />
+          <button onClick={likesHandler}>
+            <img
+              className="pr-[4px] w-6 cursor-pointer"
+              src={liked === "true" ? heartWithoutColor : heartWithColor}
+              alt=""
+            />
+          </button>
           {count}
         </p>
       </div>

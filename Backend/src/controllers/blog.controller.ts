@@ -3,8 +3,6 @@ import { Blog } from "../models/blog.model";
 import { StatusCodes } from "http-status-codes";
 import { sequelize } from "../models/index";
 import { QueryTypes } from "sequelize";
-import { User } from "../models/user.model";
-import { Like } from "../models/likes.model";
 
 // GET ALL BLOGS
 export const getAllBlog = async (
@@ -27,7 +25,7 @@ export const getAllBlog = async (
               SELECT 1 
               FROM likes l2 
               WHERE l2.blog_id = blog.blog_id 
-                AND l2.user_id = ${req.userId ? req.userId : null}
+                AND l2.user_id = ${req.userId !== undefined ? req.userId : null}
           ) THEN 'false' 
           ELSE 'true' 
       END AS canBeLiked
@@ -38,29 +36,14 @@ export const getAllBlog = async (
   left join likes l on
     l.blog_id = blog.blog_id
     group by blog.blog_id 
-  limit 10 offset 0`,
+  order by blog.updatedAt DESC
+  limit 5 offset 0`,
     {
       // replacements: { userId: req.userId! },
       type: QueryTypes.SELECT,
       raw: true,
     }
   );
-  // const blogs = await Blog.findAll({
-  //   attributes: ["blog_id", "title", "image", "date", "description"],
-  //   group: ["blog_id", "like_id"],
-  //   include: [
-  //     {
-  //       model: User,
-  //       as: "user",
-  //       attributes: ["name", "user_id"],
-  //     },
-  //     {
-  //       model: Like,
-  //       as: "like",
-  //       attributes: ["user_id"],
-  //     },
-  //   ],
-  // });
   if (blogs && blogs.length > 0) {
     console.log(req.userId);
     res.status(StatusCodes.OK).send({
@@ -83,7 +66,42 @@ export const getBlog = async (
   next: NextFunction
 ) => {
   const id = req.params.blog_id;
-  const blog = await Blog.findOne({ where: { blog_id: id } });
+  // const blog = await Blog.findOne({ where: { blog_id: id } });
+  const blog = await sequelize.query(
+    `
+    select 
+    blog.blog_id,
+	blog.title,
+  blog.image,
+	blog.date,
+  blog.description,
+  u.user_id,
+  u.name,
+  count(l.user_id) as likes,
+    CASE 
+          WHEN EXISTS (
+              SELECT 1 
+              FROM likes l2 
+              WHERE l2.blog_id = blog.blog_id 
+                AND l2.user_id = ${req.userId !== undefined ? req.userId : null}
+          ) THEN 'false' 
+          ELSE 'true' 
+      END AS canBeLiked
+  from
+    blogs as blog
+  left join users as u on
+    blog.user_id = u.user_id
+  left join likes l on
+    l.blog_id = blog.blog_id
+    where blog.blog_id = :blogId
+    group by blog.blog_id;
+  `,
+    {
+      replacements: { blogId: id },
+      type: QueryTypes.SELECT,
+      raw: true,
+    }
+  );
   if (blog) {
     res.status(StatusCodes.OK).send({
       message: "Blog found successfully",

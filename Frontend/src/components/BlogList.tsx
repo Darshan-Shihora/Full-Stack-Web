@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import Blog from "./Blog";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
 
 type Blogs = {
   blog_id: string;
@@ -52,7 +54,6 @@ function BlogList() {
             },
           });
           setBlogs(blogresponse.data.data);
-          console.log(blogresponse.data.data);
         } catch (error) {
           console.log(error.message);
         }
@@ -61,7 +62,7 @@ function BlogList() {
     } catch (error: any) {
       console.log(error.message);
     }
-  }, [setBlogs]);
+  }, []);
 
   const blog = blogs.map((blog) => (
     <Blog
@@ -96,6 +97,14 @@ function BlogList() {
         Add Blog
       </NavLink>
       {content}
+      <div className="text-2xl flex justify-center mb-6">
+        <button className="bg-blue-400 mr-2 w-8 h-8 rounded hover:bg-blue-500 cursor-not-allowed">
+          <FontAwesomeIcon icon={faAngleLeft} />
+        </button>
+        <button className="bg-blue-400 ml-2 w-8 h-8 rounded hover:bg-blue-500 cursor-not-allowed">
+          <FontAwesomeIcon icon={faAngleRight} />
+        </button>
+      </div>
     </div>
   );
 }

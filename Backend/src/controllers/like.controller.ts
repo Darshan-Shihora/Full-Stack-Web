@@ -17,16 +17,17 @@ export const postLike = async (
     if (existingLike) {
       res.send({
         message: "User Unliked the blog",
+        // data: response,
       });
       await existingLike.destroy();
     } else {
-      const like = await Like.create({
+      const response = await Like.create({
         userId: +req.userId!,
         blogId: +blogId,
       });
       res.status(StatusCodes.CREATED).send({
         message: "User Liked the blog",
-        data: like,
+        data: response,
       });
     }
   } catch (error) {
@@ -37,18 +38,6 @@ export const postLike = async (
   }
 };
 
-// export const getLikes = async (
-//   req: Request,
-//   res: Response,
-//   next: NextFunction
-// ) => {
-//   const data = await Like.findAll({ where: { userId: req.userId } });
-//   res.send({
-//     message: "Get Likes",
-//     data: data,
-//   });
-// };
-
 export const getLike = async (
   req: Request,
   res: Response,
@@ -56,19 +45,19 @@ export const getLike = async (
 ) => {
   const blogId = req.params.blogId;
   const response = await sequelize.query(
-    `select 
+    `select
     blog.blog_id,
     u.user_id,
     u.name,
     count(l.user_id) as likes,
-    CASE 
+    CASE
           WHEN EXISTS (
-              SELECT 1 
-              FROM likes l2 
-              WHERE l2.blog_id = blog.blog_id 
-                AND l2.user_id = ${req.userId ? req.userId : null}
-          ) THEN 'false' 
-          ELSE 'true' 
+              SELECT 1
+              FROM likes l2
+              WHERE l2.blog_id = blog.blog_id
+                AND l2.user_id = ${req.userId}
+          ) THEN 'false'
+          ELSE 'true'
       END AS canBeLiked
   from
     blogs as blog

@@ -30,7 +30,7 @@ const getAllBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
               SELECT 1 
               FROM likes l2 
               WHERE l2.blog_id = blog.blog_id 
-                AND l2.user_id = ${req.userId ? req.userId : null}
+                AND l2.user_id = ${req.userId !== undefined ? req.userId : null}
           ) THEN 'false' 
           ELSE 'true' 
       END AS canBeLiked
@@ -41,27 +41,12 @@ const getAllBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
   left join likes l on
     l.blog_id = blog.blog_id
     group by blog.blog_id 
-  limit 10 offset 0`, {
+  order by blog.updatedAt DESC
+  limit 5 offset 0`, {
         // replacements: { userId: req.userId! },
         type: sequelize_1.QueryTypes.SELECT,
         raw: true,
     });
-    // const blogs = await Blog.findAll({
-    //   attributes: ["blog_id", "title", "image", "date", "description"],
-    //   group: ["blog_id", "like_id"],
-    //   include: [
-    //     {
-    //       model: User,
-    //       as: "user",
-    //       attributes: ["name", "user_id"],
-    //     },
-    //     {
-    //       model: Like,
-    //       as: "like",
-    //       attributes: ["user_id"],
-    //     },
-    //   ],
-    // });
     if (blogs && blogs.length > 0) {
         console.log(req.userId);
         res.status(http_status_codes_1.StatusCodes.OK).send({
@@ -81,7 +66,39 @@ exports.getAllBlog = getAllBlog;
 // GET SINGLE BLOG
 const getBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.blog_id;
-    const blog = yield blog_model_1.Blog.findOne({ where: { blog_id: id } });
+    // const blog = await Blog.findOne({ where: { blog_id: id } });
+    const blog = yield index_1.sequelize.query(`
+    select 
+    blog.blog_id,
+	blog.title,
+  blog.image,
+	blog.date,
+  blog.description,
+  u.user_id,
+  u.name,
+  count(l.user_id) as likes,
+    CASE 
+          WHEN EXISTS (
+              SELECT 1 
+              FROM likes l2 
+              WHERE l2.blog_id = blog.blog_id 
+                AND l2.user_id = ${req.userId !== undefined ? req.userId : null}
+          ) THEN 'false' 
+          ELSE 'true' 
+      END AS canBeLiked
+  from
+    blogs as blog
+  left join users as u on
+    blog.user_id = u.user_id
+  left join likes l on
+    l.blog_id = blog.blog_id
+    where blog.blog_id = :blogId
+    group by blog.blog_id;
+  `, {
+        replacements: { blogId: id },
+        type: sequelize_1.QueryTypes.SELECT,
+        raw: true,
+    });
     if (blog) {
         res.status(http_status_codes_1.StatusCodes.OK).send({
             message: "Blog found successfully",

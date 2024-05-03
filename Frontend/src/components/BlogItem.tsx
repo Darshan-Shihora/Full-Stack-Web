@@ -1,9 +1,11 @@
-import { Link, useSubmit } from "react-router-dom";
+import { Link, useNavigate, useSubmit } from "react-router-dom";
 import img from "../assests/icons8-administrator-male-96.png";
-import heartImg from "../assests/icons8-heart-16.png";
 import eyeImg from "../assests/icons8-eye-16.png";
 import messageImg from "../assests/icons8-message-16.png";
-
+import heartWithoutColor from "../assests/icons8-heart-noColor.png";
+import heartWithColor from "../assests/icons8-heart-withColor.png";
+import axios from "axios";
+import { useEffect, useState } from "react";
 const BlogItem: React.FC<{ blog: any }> = (props) => {
   console.log(props.blog);
 
@@ -17,6 +19,51 @@ const BlogItem: React.FC<{ blog: any }> = (props) => {
     }
   }
 
+  const [liked, setLiked] = useState("");
+  const [count, setCount] = useState(0);
+  const navigate = useNavigate();
+
+  const likesHandler = async () => {
+    try {
+      const token = localStorage.getItem("Token");
+      if (!token) {
+        return navigate("../login");
+      } else {
+        await axios({
+          method: "POST",
+          url: `http://localhost:3001/like/${props.blog.blog[0].blog_id}`,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setLiked((prev) => (prev === "" ? props.blog.blog[0].canBeLiked : ""));
+        setCount((prev) => (prev === 0 ? props.blog.blog[0].likes : 0));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem("Token");
+        const postData = await axios({
+          method: "GET",
+          url: `http://localhost:3001/like/${props.blog.blog[0].blog_id}`,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setLiked(() => postData.data.data[0].canBeLiked);
+        setCount(() => postData.data.data[0].likes);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, [liked, count]);
+
   return (
     <>
       <div className="block m-auto h-auto w-[60%] border-2 border-gray-100 mt-10 my-4 p-8 box-border shadow-sm">
@@ -24,8 +71,8 @@ const BlogItem: React.FC<{ blog: any }> = (props) => {
           <div className="flex">
             <img className="size-14 mr-2" src={img} alt="" />
             <div className="text-start items-center text-gray-400">
-              <p>Admin</p>
-              <p>{props.blog.blog.date}</p>
+              <p>{props.blog.blog[0].name}</p>
+              <p>{props.blog.blog[0].date}</p>
             </div>
           </div>
           <div className="mr-12">
@@ -44,7 +91,7 @@ const BlogItem: React.FC<{ blog: any }> = (props) => {
           </div>
         </div>
         <h1 className="ml-10 text-4xl mt-8 mb-8 font-serif font-bold">
-          {props.blog.blog.title}
+          {props.blog.blog[0].title}
         </h1>
         <p className="mx-10 font-serif text-xl mb-10">
           Create a blog post subtitle that summarizes your post in a few short,
@@ -52,12 +99,12 @@ const BlogItem: React.FC<{ blog: any }> = (props) => {
         </p>
         <img
           className="w-[90%] h-[96%] m-auto block"
-          src={`${props.blog.blog.image}`}
+          src={`${props.blog.blog[0].image}`}
           alt=""
         />
 
         <p className="mx-10 text-xl font-serif mt-5">
-          {props.blog.blog.description}
+          {props.blog.blog[0].description}
         </p>
         <div className="border-t-2 flex mx-6 my-4 pt-3 relative">
           <p className="flex pr-4">
@@ -68,8 +115,13 @@ const BlogItem: React.FC<{ blog: any }> = (props) => {
             <img className="pr-[4px] w-6" src={messageImg} alt="" />2
           </p>
           <p className="flex absolute left-[96%]">
-            <img className="pr-[4px] w-6" src={heartImg} alt="" />
-            48
+            <img
+              className="pr-[4px] w-6 cursor-pointer"
+              src={liked === "true" ? heartWithoutColor : heartWithColor}
+              onClick={likesHandler}
+              alt=""
+            />
+            {count}
           </p>
         </div>
       </div>
