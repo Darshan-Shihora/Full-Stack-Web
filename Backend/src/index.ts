@@ -8,20 +8,20 @@ import likeRouter from "./routes/like.routes";
 import { User } from "./models/user.model";
 import { Blog } from "./models/blog.model";
 import { Like } from "./models/likes.model";
-import path, { dirname } from "path";
-import { fileURLToPath } from "url";
+import path from "path";
+// import { fileURLToPath } from "url";
 
 const app = express();
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = dirname(__filename);
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "images");
+    cb(null, "src/images");
   },
   filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, file.fieldname + "-" + uniqueSuffix);
+    const uniqueSuffix = Math.round(Math.random() * 1e9);
+    cb(null, file.originalname);
   },
 });
 
@@ -40,7 +40,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(multer({ storage: storage }).single("image"));
-app.use(express.static(path.join(__dirname, "images")));
+// app.use(express.static(path.join(__dirname, "src/images")));
 app.use(userRouter);
 app.use(blogRouter);
 app.use(likeRouter);

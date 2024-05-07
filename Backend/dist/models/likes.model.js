@@ -1,25 +1,28 @@
-import { DataTypes } from "sequelize";
-import { sequelize } from "./index";
-import { User } from "./user.model";
-import { Blog } from "./blog.model";
-export const Like = sequelize.define("like", {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Like = void 0;
+const sequelize_1 = require("sequelize");
+const index_1 = require("./index");
+const user_model_1 = require("./user.model");
+const blog_model_1 = require("./blog.model");
+exports.Like = index_1.sequelize.define("like", {
     likeId: {
-        type: DataTypes.INTEGER,
+        type: sequelize_1.DataTypes.INTEGER,
         primaryKey: true,
         allowNull: false,
         autoIncrement: true,
     },
     userId: {
-        type: DataTypes.INTEGER,
+        type: sequelize_1.DataTypes.INTEGER,
         references: {
-            model: User,
+            model: user_model_1.User,
             key: "user_id",
         },
     },
     blogId: {
-        type: DataTypes.INTEGER,
+        type: sequelize_1.DataTypes.INTEGER,
         references: {
-            model: Blog,
+            model: blog_model_1.Blog,
             key: "blog_id",
         },
     },

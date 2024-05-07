@@ -1,7 +1,14 @@
-import jwt from "jsonwebtoken";
-import "dotenv/config";
-export const isAuth = (req, res, next) => {
-    const token = req.get("Authorization")?.split(" ")[1];
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.isAuth = void 0;
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+require("dotenv/config");
+const isAuth = (req, res, next) => {
+    var _a;
+    const token = (_a = req.get("Authorization")) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
     let decodedToken;
     // if (!token) {
     //   res.status(StatusCodes.UNAUTHORIZED).send({
@@ -9,7 +16,7 @@ export const isAuth = (req, res, next) => {
     //   });
     // }
     try {
-        decodedToken = jwt.verify(token, process.env.SECRET_KEY);
+        decodedToken = jsonwebtoken_1.default.verify(token, process.env.SECRET_KEY);
         req.userId = decodedToken.userId;
         console.log(req.userId);
         next();
@@ -23,4 +30,5 @@ export const isAuth = (req, res, next) => {
         // });
     }
 };
+exports.isAuth = isAuth;
 //# sourceMappingURL=is-auth.js.map

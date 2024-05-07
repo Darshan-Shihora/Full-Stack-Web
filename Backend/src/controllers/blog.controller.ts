@@ -11,7 +11,6 @@ export const getAllBlog = async (
   next: NextFunction
 ) => {
   const userId = +req.userId;
-  // const userIdParam = userId === undefined ? null : `'${userId}'`;
   const offset = +req.query.offset;
   const limit = +req.query.limit;
   const blogs = await sequelize.query(
@@ -72,7 +71,6 @@ export const getBlog = async (
 ) => {
   const id = req.params.blog_id;
   const userId = +req.userId;
-  // const blog = await Blog.findOne({ where: { blog_id: id } });
   const blog = await sequelize.query(
     `
     select 
@@ -129,11 +127,31 @@ export const postBlog = async (
 ) => {
   const { title, date, description } = req.body;
   const image = req.file;
+
+  // image = {
+  //   fieldname: 'image',
+  //   originalname: 'most popular type of cms.jpg',
+  //   encoding: '7bit',
+  //   mimetype: 'image/jpeg',
+  //   destination: 'src/images',
+  //   filename: 'most popular type of cms.jpg-185352207',
+  //   path: 'src\\images\\most popular type of cms.jpg-1715073052086-185352207',
+  //   size: 53986
+  // }
+
+  const imageUrl = image.filename;
+  // const originalName = image.originalname.split(".");
+  // const suffix = image.filename.split("-")[1];
+
+  // originalName.splice(1, 0, "-", suffix, ".");
+  // const imageUrl = originalName.join("");
+  // console.log(imageUrl);
+
   const existingBlog = await Blog.findOne({ where: { title: title } });
   if (!existingBlog) {
     const blog = await Blog.create({
       title: title,
-      image: image,
+      image: imageUrl,
       date: date,
       description: description,
       user_id: +req.userId!,
@@ -156,15 +174,17 @@ export const editBlog = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { title, description, date, image } = req.body;
+  const { title, description, date } = req.body;
+  const image = req.file;
   const id = req.params.blog_id;
+  const imageUrl = image.filename;
   const editBlog: any = await Blog.findOne({ where: { blog_id: id } });
   console.log(editBlog);
   if (editBlog) {
     editBlog.title = title;
     editBlog.description = description;
     editBlog.date = date;
-    editBlog.image = image;
+    editBlog.image = imageUrl;
     await editBlog.save();
 
     res.status(StatusCodes.OK).send({
