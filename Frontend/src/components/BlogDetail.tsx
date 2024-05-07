@@ -60,7 +60,6 @@ export const action: ActionFunction = async ({ request, params }) => {
       },
       method: method,
     });
-    console.log(response);
     return redirect("..");
   } catch (error) {
     console.log("Can't delete the blog");

@@ -109,12 +109,17 @@ function BlogList() {
 
   return (
     <div className="min-h-[30rem]">
-      <NavLink
-        to="new"
-        className="bg-sky-500 w-32 my-4 p-4 text-xl block m-auto items-center text-center text-white hover:bg-sky-600 rounded"
-      >
-        Add Blog
-      </NavLink>
+      {localStorage.getItem("Token") ? (
+        <NavLink
+          to="new"
+          className="bg-sky-500 w-32 my-4 p-4 text-xl block m-auto items-center text-center text-white hover:bg-sky-600 rounded"
+        >
+          Add Blog
+        </NavLink>
+      ) : (
+        <></>
+      )}
+
       {content}
       <div className="text-2xl flex justify-center mb-6">
         <button

@@ -14,11 +14,11 @@ declare global {
 export const isAuth = (req: Request, res: Response, next: NextFunction) => {
   const token = req.get("Authorization")?.split(" ")[1];
   let decodedToken;
-  if (!token) {
-    res.status(StatusCodes.UNAUTHORIZED).send({
-      message: "Token is not set",
-    });
-  }
+  // if (!token) {
+  //   res.status(StatusCodes.UNAUTHORIZED).send({
+  //     message: "Token is not set",
+  //   });
+  // }
   try {
     decodedToken = jwt.verify(
       token as string,
@@ -29,8 +29,10 @@ export const isAuth = (req: Request, res: Response, next: NextFunction) => {
     next();
   } catch (error) {
     console.log(error);
-    res.status(StatusCodes.UNAUTHORIZED).send({
-      message: "Invalid Token",
-    });
+    req.userId = "0";
+    next();
+    // res.status(StatusCodes.UNAUTHORIZED).send({
+    //   message: "Invalid Token",
+    // });
   }
 };

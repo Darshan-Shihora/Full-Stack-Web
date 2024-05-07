@@ -25,7 +25,7 @@ const BlogItem: React.FC<{ blog: any }> = (props) => {
     try {
       const token = localStorage.getItem("Token");
       if (!token) {
-        return navigate("../login");
+        return navigate("../../login");
       } else {
         await axios({
           method: "POST",
@@ -74,18 +74,26 @@ const BlogItem: React.FC<{ blog: any }> = (props) => {
             </div>
           </div>
           <div className="mr-12">
-            <Link
-              to="edit"
-              className="mr-4 bg-sky-400 p-3 px-6 rounded text-white hover:bg-sky-600 text-md"
-            >
-              Edit
-            </Link>
-            <button
-              className="ml-4 bg-sky-400 p-3 px-4 rounded text-white hover:bg-sky-600 text-md"
-              onClick={deleteHandler}
-            >
-              Delete
-            </button>
+            {localStorage.getItem("name") === props.blog.blog[0].name ? (
+              <Link
+                to="edit"
+                className="mr-4 bg-sky-400 p-3 px-6 rounded text-white hover:bg-sky-600 text-md"
+              >
+                Edit
+              </Link>
+            ) : (
+              <></>
+            )}
+            {localStorage.getItem("name") === props.blog.blog[0].name ? (
+              <button
+                className="ml-4 bg-sky-400 p-3 px-4 rounded text-white hover:bg-sky-600 text-md"
+                onClick={deleteHandler}
+              >
+                Delete
+              </button>
+            ) : (
+              <></>
+            )}
           </div>
         </div>
         <h1 className="ml-10 text-4xl mt-8 mb-8 font-serif font-bold">

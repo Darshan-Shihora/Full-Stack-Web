@@ -52,8 +52,12 @@ const Blog: React.FC<{
             Authorization: `Bearer ${token}`,
           },
         });
-        setLiked(() => postData.data.data[0].canBeLiked);
-        setCount(() => postData.data.data[0].likes);
+        setLiked(() =>
+          postData.data.data[0] ? postData.data.data[0].canBeLiked : ""
+        );
+        setCount(() =>
+          postData.data.data[0] ? postData.data.data[0].likes : ""
+        );
       } catch (error) {
         console.log(error);
       }

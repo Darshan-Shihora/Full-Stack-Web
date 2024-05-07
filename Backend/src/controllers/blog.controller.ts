@@ -50,7 +50,6 @@ export const getAllBlog = async (
   );
   const blog = await Blog.findAll();
   if (blogs && blogs.length > 0) {
-    console.log(req.userId);
     res.status(StatusCodes.OK).send({
       message: "Blog found Successfully",
       data: blogs,
@@ -72,6 +71,7 @@ export const getBlog = async (
   next: NextFunction
 ) => {
   const id = req.params.blog_id;
+  const userId = +req.userId;
   // const blog = await Blog.findOne({ where: { blog_id: id } });
   const blog = await sequelize.query(
     `
@@ -89,7 +89,7 @@ export const getBlog = async (
               SELECT 1 
               FROM likes l2 
               WHERE l2.blog_id = blog.blog_id 
-                AND l2.user_id = ${req.userId !== undefined ? req.userId : null}
+                AND l2.user_id = :userId
           ) THEN 'false' 
           ELSE 'true' 
       END AS canBeLiked
@@ -103,7 +103,7 @@ export const getBlog = async (
     group by blog.blog_id;
   `,
     {
-      replacements: { blogId: id },
+      replacements: { blogId: id, userId },
       type: QueryTypes.SELECT,
       raw: true,
     }

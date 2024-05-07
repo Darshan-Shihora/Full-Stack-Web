@@ -32,7 +32,7 @@ const BlogForm: React.FC<{ method: FormMethod; blog: any }> = (props) => {
           type="text"
           name="title"
           required
-          defaultValue={props.blog ? props.blog.title : ""}
+          defaultValue={props.blog ? props.blog[0].title : ""}
         />
       </p>
       <p>
@@ -45,7 +45,7 @@ const BlogForm: React.FC<{ method: FormMethod; blog: any }> = (props) => {
           type="text"
           name="image"
           required
-          defaultValue={props.blog ? props.blog.image : ""}
+          defaultValue={props.blog ? props.blog[0].image : ""}
         />
       </p>
       <p>
@@ -58,7 +58,7 @@ const BlogForm: React.FC<{ method: FormMethod; blog: any }> = (props) => {
           type="date"
           name="date"
           required
-          defaultValue={props.blog ? props.blog.date : ""}
+          defaultValue={props.blog ? props.blog[0].date : ""}
         />
       </p>
       <p>
@@ -71,7 +71,7 @@ const BlogForm: React.FC<{ method: FormMethod; blog: any }> = (props) => {
           name="description"
           rows={5}
           required
-          defaultValue={props.blog ? props.blog.description : ""}
+          defaultValue={props.blog ? props.blog[0].description : ""}
         />
       </p>
       <div className="flex flex-end gap-4 mt-5">
@@ -124,7 +124,6 @@ export const action: ActionFunction = async ({ request, params }) => {
       method: method,
       data: blogData,
     });
-    console.log(response);
     return redirect("..");
   } catch (error) {
     console.log(error);

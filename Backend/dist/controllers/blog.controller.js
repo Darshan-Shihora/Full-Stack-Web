@@ -53,7 +53,6 @@ const getAllBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
     });
     const blog = yield blog_model_1.Blog.findAll();
     if (blogs && blogs.length > 0) {
-        console.log(req.userId);
         res.status(http_status_codes_1.StatusCodes.OK).send({
             message: "Blog found Successfully",
             data: blogs,
@@ -72,6 +71,7 @@ exports.getAllBlog = getAllBlog;
 // GET SINGLE BLOG
 const getBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.blog_id;
+    const userId = +req.userId;
     // const blog = await Blog.findOne({ where: { blog_id: id } });
     const blog = yield index_1.sequelize.query(`
     select 
@@ -88,7 +88,7 @@ const getBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
               SELECT 1 
               FROM likes l2 
               WHERE l2.blog_id = blog.blog_id 
-                AND l2.user_id = ${req.userId !== undefined ? req.userId : null}
+                AND l2.user_id = :userId
           ) THEN 'false' 
           ELSE 'true' 
       END AS canBeLiked
@@ -101,7 +101,7 @@ const getBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
     where blog.blog_id = :blogId
     group by blog.blog_id;
   `, {
-        replacements: { blogId: id },
+        replacements: { blogId: id, userId },
         type: sequelize_1.QueryTypes.SELECT,
         raw: true,
     });
