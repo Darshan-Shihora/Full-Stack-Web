@@ -21,6 +21,7 @@ const BlogForm: React.FC<{ method: FormMethod; blog: any }> = (props) => {
     <Form
       method={props.method}
       className="bg-gray-300 p-6 max-w-[40rem] my-8 mx-auto rounded"
+      encType="multipart/form-data"
     >
       <p>
         <label className="block w-full m-1 text-md" htmlFor="title">

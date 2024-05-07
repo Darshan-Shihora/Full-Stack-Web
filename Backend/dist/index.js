@@ -1,57 +1,67 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-var _a;
-Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importDefault(require("express"));
-require("dotenv/config");
-const cors_1 = __importDefault(require("cors"));
-const blog_routes_1 = __importDefault(require("./routes/blog.routes"));
-const user_routes_1 = __importDefault(require("./routes/user.routes"));
-const like_routes_1 = __importDefault(require("./routes/like.routes"));
-const user_model_1 = require("./models/user.model");
-const blog_model_1 = require("./models/blog.model");
-const likes_model_1 = require("./models/likes.model");
-const app = (0, express_1.default)();
-const allowedDomains = (_a = process.env.CORS_ALLOWED_ORIGIN) === null || _a === void 0 ? void 0 : _a.split(",");
+import express from "express";
+import "dotenv/config";
+import cors from "cors";
+import multer from "multer";
+import blogRouter from "./routes/blog.routes";
+import userRouter from "./routes/user.routes";
+import likeRouter from "./routes/like.routes";
+import { User } from "./models/user.model";
+import { Blog } from "./models/blog.model";
+import { Like } from "./models/likes.model";
+import path, { dirname } from "path";
+import { fileURLToPath } from "url";
+const app = express();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, "images");
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+        cb(null, file.fieldname + "-" + uniqueSuffix);
+    },
+});
+const allowedDomains = process.env.CORS_ALLOWED_ORIGIN?.split(",");
 const corsOptions = {
     origin: function (origin, callback) {
         if (!origin)
             return callback(null, true);
-        if ((allowedDomains === null || allowedDomains === void 0 ? void 0 : allowedDomains.indexOf(origin)) === -1) {
+        if (allowedDomains?.indexOf(origin) === -1) {
             const msg = `This site ${origin} does not have an access. Only specific domains are allowed to access it.`;
             return callback(new Error(msg), false);
         }
         return callback(null, true);
     },
 };
-app.use((0, cors_1.default)(corsOptions));
-app.use(express_1.default.json());
-app.use(user_routes_1.default);
-app.use(blog_routes_1.default);
-app.use(like_routes_1.default);
-user_model_1.User.hasMany(blog_model_1.Blog, {
+app.use(cors(corsOptions));
+app.use(express.json());
+app.use(multer({ storage: storage }).single("image"));
+app.use(express.static(path.join(__dirname, "images")));
+app.use(userRouter);
+app.use(blogRouter);
+app.use(likeRouter);
+User.hasMany(Blog, {
     foreignKey: "user_id",
     as: "blog",
 });
-blog_model_1.Blog.belongsTo(user_model_1.User, {
+Blog.belongsTo(User, {
     foreignKey: "user_id",
     as: "user",
 });
-user_model_1.User.hasMany(likes_model_1.Like, {
+User.hasMany(Like, {
     foreignKey: "user_id",
     as: "like",
 });
-likes_model_1.Like.belongsTo(user_model_1.User, {
+Like.belongsTo(User, {
     foreignKey: "user_id",
     as: "user",
 });
-blog_model_1.Blog.hasMany(likes_model_1.Like, {
+Blog.hasMany(Like, {
     foreignKey: "blog_id",
     as: "like",
 });
-likes_model_1.Like.belongsTo(blog_model_1.Blog, {
+Like.belongsTo(Blog, {
     foreignKey: "blog_id",
     as: "blog",
 });

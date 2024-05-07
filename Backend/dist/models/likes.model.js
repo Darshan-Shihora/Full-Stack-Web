@@ -1,28 +1,25 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Like = void 0;
-const sequelize_1 = require("sequelize");
-const index_1 = require("./index");
-const user_model_1 = require("./user.model");
-const blog_model_1 = require("./blog.model");
-exports.Like = index_1.sequelize.define("like", {
+import { DataTypes } from "sequelize";
+import { sequelize } from "./index";
+import { User } from "./user.model";
+import { Blog } from "./blog.model";
+export const Like = sequelize.define("like", {
     likeId: {
-        type: sequelize_1.DataTypes.INTEGER,
+        type: DataTypes.INTEGER,
         primaryKey: true,
         allowNull: false,
         autoIncrement: true,
     },
     userId: {
-        type: sequelize_1.DataTypes.INTEGER,
+        type: DataTypes.INTEGER,
         references: {
-            model: user_model_1.User,
+            model: User,
             key: "user_id",
         },
     },
     blogId: {
-        type: sequelize_1.DataTypes.INTEGER,
+        type: DataTypes.INTEGER,
         references: {
-            model: blog_model_1.Blog,
+            model: Blog,
             key: "blog_id",
         },
     },

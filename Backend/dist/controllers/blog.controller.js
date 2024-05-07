@@ -1,26 +1,14 @@
-"use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteBlog = exports.editBlog = exports.postBlog = exports.getBlog = exports.getAllBlog = void 0;
-const blog_model_1 = require("../models/blog.model");
-const http_status_codes_1 = require("http-status-codes");
-const index_1 = require("../models/index");
-const sequelize_1 = require("sequelize");
+import { Blog } from "../models/blog.model";
+import { StatusCodes } from "http-status-codes";
+import { sequelize } from "../models/index";
+import { QueryTypes } from "sequelize";
 // GET ALL BLOGS
-const getAllBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+export const getAllBlog = async (req, res, next) => {
     const userId = +req.userId;
     // const userIdParam = userId === undefined ? null : `'${userId}'`;
     const offset = +req.query.offset;
     const limit = +req.query.limit;
-    const blogs = yield index_1.sequelize.query(`select 
+    const blogs = await sequelize.query(`select 
     blog.blog_id,
     blog.title,
     blog.image,
@@ -48,32 +36,31 @@ const getAllBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
   order by blog.updatedAt DESC
   limit :limit offset :offset`, {
         replacements: { userId, offset, limit },
-        type: sequelize_1.QueryTypes.SELECT,
+        type: QueryTypes.SELECT,
         raw: true,
     });
-    const blog = yield blog_model_1.Blog.findAll();
+    const blog = await Blog.findAll();
     if (blogs && blogs.length > 0) {
-        res.status(http_status_codes_1.StatusCodes.OK).send({
+        res.status(StatusCodes.OK).send({
             message: "Blog found Successfully",
             data: blogs,
             length: blog.length,
         });
     }
     else {
-        res.status(http_status_codes_1.StatusCodes.NOT_FOUND).send({
+        res.status(StatusCodes.NOT_FOUND).send({
             data: null,
             message: "No Data available",
             status: "Success",
         });
     }
-});
-exports.getAllBlog = getAllBlog;
+};
 // GET SINGLE BLOG
-const getBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+export const getBlog = async (req, res, next) => {
     const id = req.params.blog_id;
     const userId = +req.userId;
     // const blog = await Blog.findOne({ where: { blog_id: id } });
-    const blog = yield index_1.sequelize.query(`
+    const blog = await sequelize.query(`
     select 
     blog.blog_id,
 	blog.title,
@@ -102,92 +89,89 @@ const getBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
     group by blog.blog_id;
   `, {
         replacements: { blogId: id, userId },
-        type: sequelize_1.QueryTypes.SELECT,
+        type: QueryTypes.SELECT,
         raw: true,
     });
     if (blog) {
-        res.status(http_status_codes_1.StatusCodes.OK).send({
+        res.status(StatusCodes.OK).send({
             message: "Blog found successfully",
             data: blog,
         });
     }
     else {
-        res.status(http_status_codes_1.StatusCodes.NOT_FOUND).send({
+        res.status(StatusCodes.NOT_FOUND).send({
             message: "No blog found",
             data: null,
         });
     }
-});
-exports.getBlog = getBlog;
+};
 // ADD NEW BLOG
-const postBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { image, title, date, description } = req.body;
-    const existingBlog = yield blog_model_1.Blog.findOne({ where: { title: title } });
+export const postBlog = async (req, res, next) => {
+    const { title, date, description } = req.body;
+    const image = req.file;
+    const existingBlog = await Blog.findOne({ where: { title: title } });
     if (!existingBlog) {
-        const blog = yield blog_model_1.Blog.create({
+        const blog = await Blog.create({
             title: title,
             image: image,
             date: date,
             description: description,
             user_id: +req.userId,
         });
-        res.status(http_status_codes_1.StatusCodes.CREATED).send({
+        res.status(StatusCodes.CREATED).send({
             message: "Blog successfully created",
             data: blog,
         });
     }
     else {
-        res.status(http_status_codes_1.StatusCodes.CONFLICT).send({
+        res.status(StatusCodes.CONFLICT).send({
             message: "Blog already exist",
             data: null,
         });
     }
-});
-exports.postBlog = postBlog;
+};
 // EDIT BLOG
-const editBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+export const editBlog = async (req, res, next) => {
     const { title, description, date, image } = req.body;
     const id = req.params.blog_id;
-    const editBlog = yield blog_model_1.Blog.findOne({ where: { blog_id: id } });
+    const editBlog = await Blog.findOne({ where: { blog_id: id } });
     console.log(editBlog);
     if (editBlog) {
         editBlog.title = title;
         editBlog.description = description;
         editBlog.date = date;
         editBlog.image = image;
-        yield editBlog.save();
-        res.status(http_status_codes_1.StatusCodes.OK).send({
+        await editBlog.save();
+        res.status(StatusCodes.OK).send({
             message: "Blog edited Successfully",
             data: editBlog,
         });
     }
     else {
-        res.status(http_status_codes_1.StatusCodes.BAD_REQUEST).send({
+        res.status(StatusCodes.BAD_REQUEST).send({
             message: "Blog can't be edit",
             data: null,
         });
     }
-});
-exports.editBlog = editBlog;
+};
 // DELETE BLOG
-const deleteBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+export const deleteBlog = async (req, res, next) => {
     const id = req.params.blog_id;
     console.log(id);
-    const blog = yield blog_model_1.Blog.findOne({ where: { blog_id: id } });
+    const blog = await Blog.findOne({ where: { blog_id: id } });
     console.log(blog);
     if (blog) {
-        res.status(http_status_codes_1.StatusCodes.OK).send({
+        res.status(StatusCodes.OK).send({
             message: "Blog deleted successfully",
             data: blog,
         });
-        yield blog.destroy();
+        await blog.destroy();
     }
     else {
-        res.status(http_status_codes_1.StatusCodes.BAD_REQUEST).send({
+        res.status(StatusCodes.BAD_REQUEST).send({
             message: "Blog can't be delete",
             data: null,
         });
     }
-});
-exports.deleteBlog = deleteBlog;
+};
 //# sourceMappingURL=blog.controller.js.map

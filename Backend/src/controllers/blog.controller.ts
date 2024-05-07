@@ -127,7 +127,8 @@ export const postBlog = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { image, title, date, description } = req.body;
+  const { title, date, description } = req.body;
+  const image = req.file;
   const existingBlog = await Blog.findOne({ where: { title: title } });
   if (!existingBlog) {
     const blog = await Blog.create({
