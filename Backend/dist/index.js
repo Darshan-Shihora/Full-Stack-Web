@@ -29,6 +29,7 @@ exports.storage = multer_1.default.diskStorage({
         cb(null, file.originalname);
     },
 });
+// export const upload = multer({ storage: storage });
 const allowedDomains = (_a = process.env.CORS_ALLOWED_ORIGIN) === null || _a === void 0 ? void 0 : _a.split(",");
 const corsOptions = {
     origin: function (origin, callback) {

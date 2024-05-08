@@ -3,6 +3,7 @@ import { Blog } from "../models/blog.model";
 import { StatusCodes } from "http-status-codes";
 import { sequelize } from "../models/index";
 import { QueryTypes } from "sequelize";
+import moment from "moment";
 
 // GET ALL BLOGS
 export const getAllBlog = async (
@@ -120,14 +121,20 @@ export const getBlog = async (
 };
 
 // ADD NEW BLOG
+
+function formatDate(dateString: any) {
+  return moment(dateString).format("YYYY-MM-DD");
+}
+
 export const postBlog = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   const { title, date, description } = req.body;
-  console.log(req);
+  const formattedDate = formatDate(date);
   const image = req.file;
+  console.log(image);
 
   // image = {
   //   fieldname: 'image',
@@ -142,7 +149,6 @@ export const postBlog = async (
 
   // const imageUrl = image.path.split("\\")[2];
   const imageUrl = image.originalname;
-  console.log(imageUrl);
 
   // const originalName = image.originalname.split(".");
   // const suffix = image.filename.split("-")[1];
@@ -156,7 +162,7 @@ export const postBlog = async (
     const blog = await Blog.create({
       title: title,
       image: imageUrl,
-      date: date,
+      date: formattedDate,
       description: description,
       user_id: +req.userId!,
     });

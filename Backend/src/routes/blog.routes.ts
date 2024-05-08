@@ -7,8 +7,8 @@ import {
   postBlog,
 } from "../controllers/blog.controller";
 import { isAuth } from "../middleware/is-auth";
-import { storage } from "../index";
 import multer from "multer";
+import { storage } from "../index";
 
 const blogRouter = express.Router();
 

@@ -8,12 +8,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteBlog = exports.editBlog = exports.postBlog = exports.getBlog = exports.getAllBlog = void 0;
 const blog_model_1 = require("../models/blog.model");
 const http_status_codes_1 = require("http-status-codes");
 const index_1 = require("../models/index");
 const sequelize_1 = require("sequelize");
+const moment_1 = __importDefault(require("moment"));
 // GET ALL BLOGS
 const getAllBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = +req.userId;
@@ -118,10 +122,14 @@ const getBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
 });
 exports.getBlog = getBlog;
 // ADD NEW BLOG
+function formatDate(dateString) {
+    return (0, moment_1.default)(dateString).format("YYYY-MM-DD");
+}
 const postBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { title, date, description } = req.body;
-    console.log(req);
+    const formattedDate = formatDate(date);
     const image = req.file;
+    console.log(image);
     // image = {
     //   fieldname: 'image',
     //   originalname: 'most popular type of cms.jpg',
@@ -134,7 +142,6 @@ const postBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
     // }
     // const imageUrl = image.path.split("\\")[2];
     const imageUrl = image.originalname;
-    console.log(imageUrl);
     // const originalName = image.originalname.split(".");
     // const suffix = image.filename.split("-")[1];
     // originalName.splice(1, 0, "-", suffix, ".");
@@ -145,7 +152,7 @@ const postBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
         const blog = yield blog_model_1.Blog.create({
             title: title,
             image: imageUrl,
-            date: date,
+            date: formattedDate,
             description: description,
             user_id: +req.userId,
         });

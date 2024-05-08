@@ -25,6 +25,8 @@ export const storage = multer.diskStorage({
   },
 });
 
+// export const upload = multer({ storage: storage });
+
 const allowedDomains = process.env.CORS_ALLOWED_ORIGIN?.split(",");
 const corsOptions = {
   origin: function (origin: any, callback: any) {

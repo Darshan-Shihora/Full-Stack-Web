@@ -8,6 +8,7 @@ import {
   useNavigate,
   useNavigation,
 } from "react-router-dom";
+import { Readable } from "stream";
 
 const BlogForm: React.FC<{ method: FormMethod; blog: any }> = (props) => {
   const navigate = useNavigate();
@@ -15,19 +16,66 @@ const BlogForm: React.FC<{ method: FormMethod; blog: any }> = (props) => {
   const [imageSrc, setImageSrc] = useState<string | null>(
     props.blog ? props.blog[0].image : null
   );
+  const [formData, setFormData] = useState<any>({
+    title: props.blog ? props.blog[0].title : "",
+    date: props.blog ? props.blog[0].date : "",
+    description: props.blog ? props.blog[0].description : "",
+  });
 
   function cancelHandler() {
     navigate("..");
   }
 
   const isSubmitting = navigation.state === "submitting";
-  // console.log(imageSrc);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImageSrc(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    setFormData((prevData: any) => ({
+      ...prevData,
+      image: file,
+    }));
+  };
+
+  // const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
+
+  //   const formDataWithImage = new FormData();
+  //   for (const key in formData) {
+  //     formDataWithImage.get(key);
+  //   }
+  //   formDataWithImage.get("image");
+  //   console.log(formDataWithImage);
+
+  //   try {
+  //     const token = localStorage.getItem("Token");
+  //     let url = "http://localhost:3001/blog";
+  //     await axios({
+  //       url: url,
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //         "Content-Type": "multipart/form-data",
+  //       },
+  //       method: "POST",
+  //       data: formDataWithImage,
+  //     });
+  //     return redirect("..");
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   return (
     <Form
       method={props.method}
       className="bg-gray-300 p-6 max-w-[40rem] my-8 mx-auto rounded"
       encType="multipart/form-data"
+      // onSubmit={handleSubmit}
     >
       <p>
         <label className="block w-full m-1 text-md" htmlFor="title">
@@ -52,14 +100,7 @@ const BlogForm: React.FC<{ method: FormMethod; blog: any }> = (props) => {
           type="file"
           name="image"
           required
-          onChange={(e) => {
-            const file = e.target.files[0];
-            const reader = new FileReader();
-            reader.onloadend = () => {
-              setImageSrc(reader.result as string);
-            };
-            reader.readAsDataURL(file);
-          }}
+          onChange={handleImageChange}
           defaultValue={props.blog ? props.blog[0].image : ""}
         />
       </p>
@@ -120,31 +161,14 @@ const BlogForm: React.FC<{ method: FormMethod; blog: any }> = (props) => {
 
 export default BlogForm;
 
-export const action: ({
-  request,
-  params,
-}: {
-  request: any;
-  params: any;
-}) => Promise<Response> = async ({ request, params }) => {
+export const action: ActionFunction = async ({ request, params }) => {
   const method = request.method;
   // console.log(imageSrc);
 
   const data = await request.formData();
 
-  const imageFile = data.get("image");
-  console.log(imageFile);
-
-  if (imageFile instanceof File) {
-    // If it's a file, you can access its properties such as name, type, size, etc.
-    console.log("Image File:", imageFile.name);
-
-    // To upload the image, you can send the file data directly as part of your request
-    // For example, if you're using FormData, you can include it like this:
-    // data.append("image", imageFile.name);
-  }
   const blogData = {
-    image: imageFile.name,
+    image: data.get("image"),
     title: data.get("title"),
     date: data.get("date"),
     description: data.get("description"),
@@ -161,6 +185,7 @@ export const action: ({
       url: url,
       headers: {
         Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
       },
       method: method,
       data: blogData,

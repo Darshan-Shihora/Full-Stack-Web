@@ -2,14 +2,6 @@ import { DataTypes } from "sequelize";
 import { sequelize } from "../models/index";
 import { User } from "./user.model";
 
-export type BlogType = {
-  blog_id: number;
-  image: string;
-  title: string;
-  date: Date;
-  description: string;
-};
-
 export const Blog = sequelize.define("blog", {
   blog_id: {
     type: DataTypes.INTEGER,
