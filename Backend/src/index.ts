@@ -15,7 +15,7 @@ const app = express();
 // const __filename = fileURLToPath(import.meta.url);
 // const __dirname = dirname(__filename);
 
-const storage = multer.diskStorage({
+export const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "src/images");
   },
@@ -39,8 +39,8 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
-app.use(multer({ storage: storage }).single("image"));
-// app.use(express.static(path.join(__dirname, "src/images")));
+// app.use(multer({ storage: storage }).single("image"));
+app.use(express.static(path.join(__dirname, "src/images")));
 app.use(userRouter);
 app.use(blogRouter);
 app.use(likeRouter);

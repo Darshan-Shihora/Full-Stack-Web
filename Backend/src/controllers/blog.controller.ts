@@ -126,6 +126,7 @@ export const postBlog = async (
   next: NextFunction
 ) => {
   const { title, date, description } = req.body;
+  console.log(req);
   const image = req.file;
 
   // image = {
@@ -139,7 +140,10 @@ export const postBlog = async (
   //   size: 53986
   // }
 
-  const imageUrl = image.filename;
+  // const imageUrl = image.path.split("\\")[2];
+  const imageUrl = image.originalname;
+  console.log(imageUrl);
+
   // const originalName = image.originalname.split(".");
   // const suffix = image.filename.split("-")[1];
 

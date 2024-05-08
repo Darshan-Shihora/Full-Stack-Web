@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.storage = void 0;
 const express_1 = __importDefault(require("express"));
 require("dotenv/config");
 const cors_1 = __importDefault(require("cors"));
@@ -14,11 +15,12 @@ const like_routes_1 = __importDefault(require("./routes/like.routes"));
 const user_model_1 = require("./models/user.model");
 const blog_model_1 = require("./models/blog.model");
 const likes_model_1 = require("./models/likes.model");
+const path_1 = __importDefault(require("path"));
 // import { fileURLToPath } from "url";
 const app = (0, express_1.default)();
 // const __filename = fileURLToPath(import.meta.url);
 // const __dirname = dirname(__filename);
-const storage = multer_1.default.diskStorage({
+exports.storage = multer_1.default.diskStorage({
     destination: (req, file, cb) => {
         cb(null, "src/images");
     },
@@ -41,8 +43,8 @@ const corsOptions = {
 };
 app.use((0, cors_1.default)(corsOptions));
 app.use(express_1.default.json());
-app.use((0, multer_1.default)({ storage: storage }).single("image"));
-// app.use(express.static(path.join(__dirname, "src/images")));
+// app.use(multer({ storage: storage }).single("image"));
+app.use(express_1.default.static(path_1.default.join(__dirname, "src/images")));
 app.use(user_routes_1.default);
 app.use(blog_routes_1.default);
 app.use(like_routes_1.default);

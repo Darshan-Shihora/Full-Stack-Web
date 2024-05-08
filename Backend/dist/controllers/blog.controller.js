@@ -120,6 +120,7 @@ exports.getBlog = getBlog;
 // ADD NEW BLOG
 const postBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { title, date, description } = req.body;
+    console.log(req);
     const image = req.file;
     // image = {
     //   fieldname: 'image',
@@ -131,7 +132,9 @@ const postBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
     //   path: 'src\\images\\most popular type of cms.jpg-1715073052086-185352207',
     //   size: 53986
     // }
-    const imageUrl = image.filename;
+    // const imageUrl = image.path.split("\\")[2];
+    const imageUrl = image.originalname;
+    console.log(imageUrl);
     // const originalName = image.originalname.split(".");
     // const suffix = image.filename.split("-")[1];
     // originalName.splice(1, 0, "-", suffix, ".");

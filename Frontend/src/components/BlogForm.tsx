@@ -1,4 +1,5 @@
 import axios from "axios";
+import { useState } from "react";
 import {
   ActionFunction,
   Form,
@@ -11,11 +12,16 @@ import {
 const BlogForm: React.FC<{ method: FormMethod; blog: any }> = (props) => {
   const navigate = useNavigate();
   const navigation = useNavigation();
+  const [imageSrc, setImageSrc] = useState<string | null>(
+    props.blog ? props.blog[0].image : null
+  );
+
   function cancelHandler() {
     navigate("..");
   }
 
   const isSubmitting = navigation.state === "submitting";
+  // console.log(imageSrc);
 
   return (
     <Form
@@ -43,12 +49,27 @@ const BlogForm: React.FC<{ method: FormMethod; blog: any }> = (props) => {
         <input
           className="block w-full p-1 bg-gray-100 rounded"
           id="image"
-          type="text"
+          type="file"
           name="image"
           required
+          onChange={(e) => {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              setImageSrc(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+          }}
           defaultValue={props.blog ? props.blog[0].image : ""}
         />
       </p>
+      {imageSrc && (
+        <img
+          src={imageSrc}
+          alt="Preview"
+          className="block w-full max-w-xs mx-auto rounded my-2"
+        />
+      )}
       <p>
         <label className="block w-full m-1 text-md" htmlFor="date">
           Date
@@ -99,17 +120,36 @@ const BlogForm: React.FC<{ method: FormMethod; blog: any }> = (props) => {
 
 export default BlogForm;
 
-export const action: ActionFunction = async ({ request, params }) => {
+export const action: ({
+  request,
+  params,
+}: {
+  request: any;
+  params: any;
+}) => Promise<Response> = async ({ request, params }) => {
   const method = request.method;
+  // console.log(imageSrc);
 
   const data = await request.formData();
 
+  const imageFile = data.get("image");
+  console.log(imageFile);
+
+  if (imageFile instanceof File) {
+    // If it's a file, you can access its properties such as name, type, size, etc.
+    console.log("Image File:", imageFile.name);
+
+    // To upload the image, you can send the file data directly as part of your request
+    // For example, if you're using FormData, you can include it like this:
+    // data.append("image", imageFile.name);
+  }
   const blogData = {
-    image: data.get("image"),
+    image: imageFile.name,
     title: data.get("title"),
     date: data.get("date"),
     description: data.get("description"),
   };
+  console.log(blogData);
   const token = localStorage.getItem("Token");
   let url = "http://localhost:3001/blog";
   if (method === "PATCH") {
