@@ -40,7 +40,7 @@ export const getAllBlog = async (
   left join likes l on
     l.blog_id = blog.blog_id
     group by blog.blog_id 
-  order by blog.updatedAt DESC
+  order by blog.updated_at DESC
   limit :limit offset :offset`,
     {
       replacements: { userId, offset, limit },
@@ -149,7 +149,7 @@ export const postBlog = async (
   // }
 
   const imageUrl = image.buffer;
-
+  const imageName = Date.now() + "-" + image.originalname;
 
   const existingBlog = await Blog.findOne({ where: { title: title } });
   if (!existingBlog) {
@@ -157,6 +157,7 @@ export const postBlog = async (
       title: title,
       image: imageUrl,
       date: formattedDate,
+      imageName: imageName,
       description: description,
       user_id: +req.userId!,
     });
@@ -181,7 +182,8 @@ export const editBlog = async (
   const { title, description, date } = req.body;
   const image = req.file;
   const id = req.params.blog_id;
-  const imageUrl = image.filename;
+  const imageUrl = image.buffer;
+  const imageName = Date.now() + "-" + image.originalname;
   const editBlog: any = await Blog.findOne({ where: { blog_id: id } });
   console.log(editBlog);
   if (editBlog) {
@@ -189,6 +191,7 @@ export const editBlog = async (
     editBlog.description = description;
     editBlog.date = date;
     editBlog.image = imageUrl;
+    editBlog.imageName = imageName;
     await editBlog.save();
 
     res.status(StatusCodes.OK).send({

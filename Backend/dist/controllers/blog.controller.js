@@ -48,7 +48,7 @@ const getAllBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
   left join likes l on
     l.blog_id = blog.blog_id
     group by blog.blog_id 
-  order by blog.updatedAt DESC
+  order by blog.updated_at DESC
   limit :limit offset :offset`, {
         replacements: { userId, offset, limit },
         type: sequelize_1.QueryTypes.SELECT,
@@ -141,12 +141,14 @@ const postBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
     //   size: 53986
     // }
     const imageUrl = image.buffer;
+    const imageName = Date.now() + "-" + image.originalname;
     const existingBlog = yield blog_model_1.Blog.findOne({ where: { title: title } });
     if (!existingBlog) {
         const blog = yield blog_model_1.Blog.create({
             title: title,
             image: imageUrl,
             date: formattedDate,
+            imageName: imageName,
             description: description,
             user_id: +req.userId,
         });
@@ -168,7 +170,8 @@ const editBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
     const { title, description, date } = req.body;
     const image = req.file;
     const id = req.params.blog_id;
-    const imageUrl = image.filename;
+    const imageUrl = image.buffer;
+    const imageName = Date.now() + "-" + image.originalname;
     const editBlog = yield blog_model_1.Blog.findOne({ where: { blog_id: id } });
     console.log(editBlog);
     if (editBlog) {
@@ -176,6 +179,7 @@ const editBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
         editBlog.description = description;
         editBlog.date = date;
         editBlog.image = imageUrl;
+        editBlog.imageName = imageName;
         yield editBlog.save();
         res.status(http_status_codes_1.StatusCodes.OK).send({
             message: "Blog edited Successfully",

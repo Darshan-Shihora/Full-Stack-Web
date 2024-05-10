@@ -12,6 +12,9 @@ export const Blog = sequelize.define("blog", {
   image: {
     type: DataTypes.BLOB("long"),
   },
+  imageName: {
+    type: DataTypes.STRING,
+  },
   title: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -31,4 +34,6 @@ export const Blog = sequelize.define("blog", {
       key: "user_id",
     },
   },
+}, {
+  underscored: true
 });

@@ -73,7 +73,6 @@ function BlogList() {
             const imageBase64 = `${Buffer.from(blog.image.data).toString(
               "base64"
             )}`;
-            console.log(imageBase64);
 
             return {
               ...blog,

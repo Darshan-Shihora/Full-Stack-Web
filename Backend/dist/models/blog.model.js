@@ -14,6 +14,9 @@ exports.Blog = index_1.sequelize.define("blog", {
     image: {
         type: sequelize_1.DataTypes.BLOB("long"),
     },
+    imageName: {
+        type: sequelize_1.DataTypes.STRING,
+    },
     title: {
         type: sequelize_1.DataTypes.STRING,
         allowNull: false,
@@ -33,5 +36,7 @@ exports.Blog = index_1.sequelize.define("blog", {
             key: "user_id",
         },
     },
+}, {
+    underscored: true
 });
 //# sourceMappingURL=blog.model.js.map
