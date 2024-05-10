@@ -116,8 +116,6 @@ function BlogList() {
   }
   if (blogs.length > 0) {
     content = blog;
-  } else {
-    content = <p className="text-center mt-3 text-2xl">No Data</p>;
   }
 
   return (

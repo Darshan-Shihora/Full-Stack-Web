@@ -8,19 +8,11 @@ import {
   useNavigate,
   useNavigation,
 } from "react-router-dom";
-import { Readable } from "stream";
 let fileBlob = null;
 const BlogForm: React.FC<{ method: FormMethod; blog: any }> = (props) => {
   const navigate = useNavigate();
   const navigation = useNavigation();
-  const [imageSrc, setImageSrc] = useState<string | null>(
-    props.blog ? props.blog[0].image : null
-  );
-  const [formData, setFormData] = useState<any>({
-    title: props.blog ? props.blog[0].title : "",
-    date: props.blog ? props.blog[0].date : "",
-    description: props.blog ? props.blog[0].description : "",
-  });
+  const [imageSrc, setImageSrc] = useState<string | null>();
 
   function cancelHandler() {
     navigate("..");
@@ -37,47 +29,13 @@ const BlogForm: React.FC<{ method: FormMethod; blog: any }> = (props) => {
       console.log(reader);
     };
     reader.readAsDataURL(file);
-
-    setFormData((prevData: any) => ({
-      ...prevData,
-      image: file,
-    }));
   };
-
-  // const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault();
-
-  //   const formDataWithImage = new FormData();
-  //   for (const key in formData) {
-  //     formDataWithImage.get(key);
-  //   }
-  //   formDataWithImage.get("image");
-  //   console.log(formDataWithImage);
-
-  //   try {
-  //     const token = localStorage.getItem("Token");
-  //     let url = "http://localhost:3001/blog";
-  //     await axios({
-  //       url: url,
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //         "Content-Type": "multipart/form-data",
-  //       },
-  //       method: "POST",
-  //       data: formDataWithImage,
-  //     });
-  //     return redirect("..");
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
 
   return (
     <Form
       method={props.method}
       className="bg-gray-300 p-6 max-w-[40rem] my-8 mx-auto rounded"
       encType="multipart/form-data"
-      // onSubmit={handleSubmit}
     >
       <p>
         <label className="block w-full m-1 text-md" htmlFor="title">
@@ -103,7 +61,7 @@ const BlogForm: React.FC<{ method: FormMethod; blog: any }> = (props) => {
           name="image"
           required
           onChange={handleImageChange}
-          defaultValue={props.blog ? props.blog[0].image : ""}
+          // defaultValue={props.blog ? props.blog[0].image : ""}
         />
       </p>
       {imageSrc && (
@@ -173,8 +131,6 @@ export const action: ActionFunction = async ({ request, params }) => {
     date: data.get("date"),
     description: data.get("description"),
   };
-  console.log(fileBlob);
-  console.log(blogData);
   const token = localStorage.getItem("Token");
   let url = "http://localhost:3001/blog";
   if (method === "PATCH") {
