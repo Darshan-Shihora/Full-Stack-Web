@@ -24,7 +24,6 @@ blogRouter.post(
 );
 
 blogRouter.patch("/blog/:blog_id", isAuth, editBlog);
-
 blogRouter.delete("/blog/:blog_id", isAuth, deleteBlog);
 
 export default blogRouter;

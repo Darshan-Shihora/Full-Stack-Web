@@ -10,7 +10,7 @@ export const Blog = sequelize.define("blog", {
     allowNull: false,
   },
   image: {
-    type: DataTypes.BLOB,
+    type: DataTypes.BLOB("long"),
   },
   title: {
     type: DataTypes.STRING,

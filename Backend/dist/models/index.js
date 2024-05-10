@@ -15,12 +15,12 @@ require("dotenv/config");
 const sequelize = new sequelize_1.Sequelize(process.env.DB_NAME, process.env.DB_USERNAME, process.env.DB_PASSWORD, {
     dialect: "mysql",
     host: process.env.DB_HOST,
-    // logging: false,
+    logging: false,
 });
 exports.sequelize = sequelize;
 const dbConnection = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        yield sequelize.authenticate();
+        yield sequelize.sync();
         console.log("=> Created a new connection.");
     }
     catch (error) {

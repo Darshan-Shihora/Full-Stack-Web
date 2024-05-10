@@ -8,7 +8,7 @@ const sequelize = new Sequelize(
   {
     dialect: "mysql",
     host: process.env.DB_HOST,
-    // logging: false,
+    logging: false,
   }
 );
 
@@ -16,7 +16,7 @@ export { sequelize };
 
 const dbConnection = async () => {
   try {
-    await sequelize.authenticate();
+    await sequelize.sync();
     console.log("=> Created a new connection.");
   } catch (error) {
     console.error("=> Error syncing table:", error);

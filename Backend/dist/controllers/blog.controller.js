@@ -140,13 +140,7 @@ const postBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
     //   path: 'src\\images\\most popular type of cms.jpg-1715073052086-185352207',
     //   size: 53986
     // }
-    // const imageUrl = image.path.split("\\")[2];
-    const imageUrl = image.originalname;
-    // const originalName = image.originalname.split(".");
-    // const suffix = image.filename.split("-")[1];
-    // originalName.splice(1, 0, "-", suffix, ".");
-    // const imageUrl = originalName.join("");
-    // console.log(imageUrl);
+    const imageUrl = image.buffer;
     const existingBlog = yield blog_model_1.Blog.findOne({ where: { title: title } });
     if (!existingBlog) {
         const blog = yield blog_model_1.Blog.create({

@@ -9,7 +9,7 @@ import {
   useNavigation,
 } from "react-router-dom";
 import { Readable } from "stream";
-
+let fileBlob = null;
 const BlogForm: React.FC<{ method: FormMethod; blog: any }> = (props) => {
   const navigate = useNavigate();
   const navigation = useNavigation();
@@ -30,9 +30,11 @@ const BlogForm: React.FC<{ method: FormMethod; blog: any }> = (props) => {
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files[0];
+    fileBlob = e.target.files[0];
     const reader = new FileReader();
     reader.onloadend = () => {
       setImageSrc(reader.result as string);
+      console.log(reader);
     };
     reader.readAsDataURL(file);
 
@@ -163,8 +165,6 @@ export default BlogForm;
 
 export const action: ActionFunction = async ({ request, params }) => {
   const method = request.method;
-  // console.log(imageSrc);
-
   const data = await request.formData();
 
   const blogData = {
@@ -173,6 +173,7 @@ export const action: ActionFunction = async ({ request, params }) => {
     date: data.get("date"),
     description: data.get("description"),
   };
+  console.log(fileBlob);
   console.log(blogData);
   const token = localStorage.getItem("Token");
   let url = "http://localhost:3001/blog";

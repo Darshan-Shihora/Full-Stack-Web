@@ -12,7 +12,7 @@ exports.Blog = index_1.sequelize.define("blog", {
         allowNull: false,
     },
     image: {
-        type: sequelize_1.DataTypes.BLOB,
+        type: sequelize_1.DataTypes.BLOB("long"),
     },
     title: {
         type: sequelize_1.DataTypes.STRING,

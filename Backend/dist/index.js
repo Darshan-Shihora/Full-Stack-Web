@@ -22,14 +22,13 @@ const app = (0, express_1.default)();
 // const __dirname = dirname(__filename);
 exports.storage = multer_1.default.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, "src/images");
+        cb(null, "dist/public/images");
     },
     filename: (req, file, cb) => {
-        const uniqueSuffix = Math.round(Math.random() * 1e9);
-        cb(null, file.originalname);
+        cb(null, Date.now() + '-' + file.originalname);
     },
 });
-// export const upload = multer({ storage: storage });
+// export const upload = multer({ storage: storage }).single('image');
 const allowedDomains = (_a = process.env.CORS_ALLOWED_ORIGIN) === null || _a === void 0 ? void 0 : _a.split(",");
 const corsOptions = {
     origin: function (origin, callback) {
@@ -45,7 +44,7 @@ const corsOptions = {
 app.use((0, cors_1.default)(corsOptions));
 app.use(express_1.default.json());
 // app.use(multer({ storage: storage }).single("image"));
-app.use(express_1.default.static(path_1.default.join(__dirname, "src/images")));
+app.use(express_1.default.static(path_1.default.join(__dirname, "public")));
 app.use(user_routes_1.default);
 app.use(blog_routes_1.default);
 app.use(like_routes_1.default);

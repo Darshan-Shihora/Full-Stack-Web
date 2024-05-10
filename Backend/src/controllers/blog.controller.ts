@@ -49,6 +49,7 @@ export const getAllBlog = async (
     }
   );
   const blog = await Blog.findAll();
+
   if (blogs && blogs.length > 0) {
     res.status(StatusCodes.OK).send({
       message: "Blog found Successfully",
@@ -147,15 +148,8 @@ export const postBlog = async (
   //   size: 53986
   // }
 
-  // const imageUrl = image.path.split("\\")[2];
-  const imageUrl = image.originalname;
+  const imageUrl = image.buffer;
 
-  // const originalName = image.originalname.split(".");
-  // const suffix = image.filename.split("-")[1];
-
-  // originalName.splice(1, 0, "-", suffix, ".");
-  // const imageUrl = originalName.join("");
-  // console.log(imageUrl);
 
   const existingBlog = await Blog.findOne({ where: { title: title } });
   if (!existingBlog) {
