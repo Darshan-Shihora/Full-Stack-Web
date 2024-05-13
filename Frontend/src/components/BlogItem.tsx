@@ -57,8 +57,12 @@ const BlogItem: React.FC<{ blog: any }> = (props) => {
             Authorization: `Bearer ${token}`,
           },
         });
-        setLiked(() => postData.data.data[0].canBeLiked);
-        setCount(() => postData.data.data[0].likes);
+        setLiked(() =>
+          postData.data.data[0] ? postData.data.data[0].canBeLiked : ""
+        );
+        setCount(() =>
+          postData.data.data[0] ? postData.data.data[0].likes : ""
+        );
       } catch (error) {
         console.log(error);
       }
@@ -108,7 +112,7 @@ const BlogItem: React.FC<{ blog: any }> = (props) => {
           punchy sentences and entices your audience to continue reading.
         </p>
         <img
-          className="w-[90%] h-[96%] m-auto block"
+          className="w-[89%] h-96 m-auto"
           src={`data:image/jpeg;base64,${imageBase64}`}
           alt=""
         />
