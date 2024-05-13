@@ -20,7 +20,7 @@ const sequelize = new sequelize_1.Sequelize(process.env.DB_NAME, process.env.DB_
 exports.sequelize = sequelize;
 const dbConnection = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        yield sequelize.sync();
+        yield sequelize.authenticate();
         console.log("=> Created a new connection.");
     }
     catch (error) {

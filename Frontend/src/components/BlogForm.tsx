@@ -8,7 +8,6 @@ import {
   useNavigate,
   useNavigation,
 } from "react-router-dom";
-let fileBlob = null;
 const BlogForm: React.FC<{ method: FormMethod; blog: any }> = (props) => {
   const navigate = useNavigate();
   const navigation = useNavigation();
@@ -22,7 +21,6 @@ const BlogForm: React.FC<{ method: FormMethod; blog: any }> = (props) => {
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files[0];
-    fileBlob = e.target.files[0];
     const reader = new FileReader();
     reader.onloadend = () => {
       setImageSrc(reader.result as string);
@@ -30,7 +28,7 @@ const BlogForm: React.FC<{ method: FormMethod; blog: any }> = (props) => {
     };
     reader.readAsDataURL(file);
   };
-
+  console.log(props.blog[0]);
   return (
     <Form
       method={props.method}
@@ -61,7 +59,7 @@ const BlogForm: React.FC<{ method: FormMethod; blog: any }> = (props) => {
           name="image"
           required
           onChange={handleImageChange}
-          // defaultValue={props.blog ? props.blog[0].image : ""}
+          // defaultValue={props.blog ? props.blog[0].image.data : ""}
         />
       </p>
       {imageSrc && (
@@ -137,8 +135,10 @@ export const action: ActionFunction = async ({ request, params }) => {
     const blogId = params.blogId;
     url = `http://localhost:3001/blog/${blogId}`;
   }
+  console.log(blogData);
+
   try {
-    const response = await axios({
+    await axios({
       url: url,
       headers: {
         Authorization: `Bearer ${token}`,
@@ -147,6 +147,7 @@ export const action: ActionFunction = async ({ request, params }) => {
       method: method,
       data: blogData,
     });
+    console.log(blogData);
     return redirect("..");
   } catch (error) {
     console.log(error);

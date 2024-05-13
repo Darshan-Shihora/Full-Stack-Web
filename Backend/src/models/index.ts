@@ -16,7 +16,7 @@ export { sequelize };
 
 const dbConnection = async () => {
   try {
-    await sequelize.sync();
+    await sequelize.authenticate();
     console.log("=> Created a new connection.");
   } catch (error) {
     console.error("=> Error syncing table:", error);

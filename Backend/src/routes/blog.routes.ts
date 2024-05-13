@@ -23,7 +23,12 @@ blogRouter.post(
   postBlog
 );
 
-blogRouter.patch("/blog/:blog_id", isAuth, editBlog);
+blogRouter.patch(
+  "/blog/:blog_id",
+  isAuth,
+  multer({ storage: storage }).single("image"),
+  editBlog
+);
 blogRouter.delete("/blog/:blog_id", isAuth, deleteBlog);
 
 export default blogRouter;

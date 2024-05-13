@@ -77,22 +77,22 @@ export const getBlog = async (
     `
     select 
     blog.blog_id,
-	blog.title,
-  blog.image,
-	blog.date,
-  blog.description,
-  u.user_id,
-  u.name,
-  count(l.user_id) as likes,
+    blog.title,
+    blog.image,
+    blog.date,
+    blog.description,
+    u.user_id,
+    u.name,
+    count(l.user_id) as likes,
     CASE 
-          WHEN EXISTS (
-              SELECT 1 
-              FROM likes l2 
-              WHERE l2.blog_id = blog.blog_id 
-                AND l2.user_id = :userId
-          ) THEN 'false' 
-          ELSE 'true' 
-      END AS canBeLiked
+      WHEN EXISTS (
+        SELECT 1 
+          FROM likes l2 
+            WHERE l2.blog_id = blog.blog_id 
+            AND l2.user_id = :userId
+      ) THEN 'false' 
+      ELSE 'true' 
+    END AS canBeLiked
   from
     blogs as blog
   left join users as u on
@@ -137,17 +137,6 @@ export const postBlog = async (
   const image = req.file;
   console.log(image);
 
-  // image = {
-  //   fieldname: 'image',
-  //   originalname: 'most popular type of cms.jpg',
-  //   encoding: '7bit',
-  //   mimetype: 'image/jpeg',
-  //   destination: 'src/images',
-  //   filename: 'most popular type of cms.jpg-185352207',
-  //   path: 'src\\images\\most popular type of cms.jpg-1715073052086-185352207',
-  //   size: 53986
-  // }
-
   const imageUrl = image.buffer;
   const imageName = Date.now() + "-" + image.originalname;
 
@@ -180,7 +169,10 @@ export const editBlog = async (
   next: NextFunction
 ) => {
   const { title, description, date } = req.body;
+  const formattedDate = formatDate(date);
   const image = req.file;
+  console.log(req.file);
+
   const id = req.params.blog_id;
   const imageUrl = image.buffer;
   const imageName = Date.now() + "-" + image.originalname;
@@ -189,11 +181,10 @@ export const editBlog = async (
   if (editBlog) {
     editBlog.title = title;
     editBlog.description = description;
-    editBlog.date = date;
+    editBlog.date = formattedDate;
     editBlog.image = imageUrl;
     editBlog.imageName = imageName;
     await editBlog.save();
-
     res.status(StatusCodes.OK).send({
       message: "Blog edited Successfully",
       data: editBlog,
