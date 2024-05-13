@@ -3,6 +3,7 @@ import { Blog } from "../models/blog.model";
 import { StatusCodes } from "http-status-codes";
 import { sequelize } from "../models/index";
 import { QueryTypes } from "sequelize";
+import moment from "moment";
 
 // GET ALL BLOGS
 export const getAllBlog = async (
@@ -11,7 +12,6 @@ export const getAllBlog = async (
   next: NextFunction
 ) => {
   const userId = +req.userId;
-  // const userIdParam = userId === undefined ? null : `'${userId}'`;
   const offset = +req.query.offset;
   const limit = +req.query.limit;
   const blogs = await sequelize.query(
@@ -40,7 +40,7 @@ export const getAllBlog = async (
   left join likes l on
     l.blog_id = blog.blog_id
     group by blog.blog_id 
-  order by blog.updatedAt DESC
+  order by blog.updated_at DESC
   limit :limit offset :offset`,
     {
       replacements: { userId, offset, limit },
@@ -49,6 +49,7 @@ export const getAllBlog = async (
     }
   );
   const blog = await Blog.findAll();
+
   if (blogs && blogs.length > 0) {
     res.status(StatusCodes.OK).send({
       message: "Blog found Successfully",
@@ -72,27 +73,26 @@ export const getBlog = async (
 ) => {
   const id = req.params.blog_id;
   const userId = +req.userId;
-  // const blog = await Blog.findOne({ where: { blog_id: id } });
   const blog = await sequelize.query(
     `
     select 
     blog.blog_id,
-	blog.title,
-  blog.image,
-	blog.date,
-  blog.description,
-  u.user_id,
-  u.name,
-  count(l.user_id) as likes,
+    blog.title,
+    blog.image,
+    blog.date,
+    blog.description,
+    u.user_id,
+    u.name,
+    count(l.user_id) as likes,
     CASE 
-          WHEN EXISTS (
-              SELECT 1 
-              FROM likes l2 
-              WHERE l2.blog_id = blog.blog_id 
-                AND l2.user_id = :userId
-          ) THEN 'false' 
-          ELSE 'true' 
-      END AS canBeLiked
+      WHEN EXISTS (
+        SELECT 1 
+          FROM likes l2 
+            WHERE l2.blog_id = blog.blog_id 
+            AND l2.user_id = :userId
+      ) THEN 'false' 
+      ELSE 'true' 
+    END AS canBeLiked
   from
     blogs as blog
   left join users as u on
@@ -122,18 +122,31 @@ export const getBlog = async (
 };
 
 // ADD NEW BLOG
+
+function formatDate(dateString: any) {
+  return moment(dateString).format("YYYY-MM-DD");
+}
+
 export const postBlog = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const { image, title, date, description } = req.body;
+  const { title, date, description } = req.body;
+  const formattedDate = formatDate(date);
+  const image = req.file;
+  console.log(image);
+
+  const imageUrl = image.buffer;
+  const imageName = Date.now() + "-" + image.originalname;
+
   const existingBlog = await Blog.findOne({ where: { title: title } });
   if (!existingBlog) {
     const blog = await Blog.create({
       title: title,
-      image: image,
-      date: date,
+      image: imageUrl,
+      date: formattedDate,
+      imageName: imageName,
       description: description,
       user_id: +req.userId!,
     });
@@ -155,17 +168,23 @@ export const editBlog = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { title, description, date, image } = req.body;
+  const { title, description, date } = req.body;
+  const formattedDate = formatDate(date);
+  const image = req.file;
+  console.log(req.file);
+
   const id = req.params.blog_id;
+  const imageUrl = image.buffer;
+  const imageName = Date.now() + "-" + image.originalname;
   const editBlog: any = await Blog.findOne({ where: { blog_id: id } });
   console.log(editBlog);
   if (editBlog) {
     editBlog.title = title;
     editBlog.description = description;
-    editBlog.date = date;
-    editBlog.image = image;
+    editBlog.date = formattedDate;
+    editBlog.image = imageUrl;
+    editBlog.imageName = imageName;
     await editBlog.save();
-
     res.status(StatusCodes.OK).send({
       message: "Blog edited Successfully",
       data: editBlog,

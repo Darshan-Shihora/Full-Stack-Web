@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import Blog from "./Blog";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
+import { Buffer } from "buffer";
 
 type Blogs = {
   blog_id: string;
@@ -66,7 +67,19 @@ function BlogList() {
               offset: offset,
             },
           });
-          setBlogs(blogresponse.data.data);
+          console.log(blogresponse.data.data);
+
+          const blogsWithImages = blogresponse.data.data.map((blog: any) => {
+            const imageBase64 = `${Buffer.from(blog.image.data).toString(
+              "base64"
+            )}`;
+
+            return {
+              ...blog,
+              image: `data:image/jpeg;base64,${imageBase64}`,
+            };
+          });
+          setBlogs(blogsWithImages);
           setLength(blogresponse.data.length);
         } catch (error) {
           console.log(error.message);
@@ -103,8 +116,6 @@ function BlogList() {
   }
   if (blogs.length > 0) {
     content = blog;
-  } else {
-    content = <p className="text-center mt-3 text-2xl">No Data</p>;
   }
 
   return (

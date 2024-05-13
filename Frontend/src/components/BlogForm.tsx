@@ -1,4 +1,5 @@
 import axios from "axios";
+import { useState } from "react";
 import {
   ActionFunction,
   Form,
@@ -7,20 +8,32 @@ import {
   useNavigate,
   useNavigation,
 } from "react-router-dom";
-
 const BlogForm: React.FC<{ method: FormMethod; blog: any }> = (props) => {
   const navigate = useNavigate();
   const navigation = useNavigation();
+  const [imageSrc, setImageSrc] = useState<string | null>();
+
   function cancelHandler() {
     navigate("..");
   }
 
   const isSubmitting = navigation.state === "submitting";
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImageSrc(reader.result as string);
+      console.log(reader);
+    };
+    reader.readAsDataURL(file);
+  };
+  console.log(props.blog[0]);
   return (
     <Form
       method={props.method}
       className="bg-gray-300 p-6 max-w-[40rem] my-8 mx-auto rounded"
+      encType="multipart/form-data"
     >
       <p>
         <label className="block w-full m-1 text-md" htmlFor="title">
@@ -42,12 +55,20 @@ const BlogForm: React.FC<{ method: FormMethod; blog: any }> = (props) => {
         <input
           className="block w-full p-1 bg-gray-100 rounded"
           id="image"
-          type="text"
+          type="file"
           name="image"
           required
-          defaultValue={props.blog ? props.blog[0].image : ""}
+          onChange={handleImageChange}
+          // defaultValue={props.blog ? props.blog[0].image.data : ""}
         />
       </p>
+      {imageSrc && (
+        <img
+          src={imageSrc}
+          alt="Preview"
+          className="block w-full max-w-xs mx-auto rounded my-2"
+        />
+      )}
       <p>
         <label className="block w-full m-1 text-md" htmlFor="date">
           Date
@@ -100,7 +121,6 @@ export default BlogForm;
 
 export const action: ActionFunction = async ({ request, params }) => {
   const method = request.method;
-
   const data = await request.formData();
 
   const blogData = {
@@ -115,15 +135,19 @@ export const action: ActionFunction = async ({ request, params }) => {
     const blogId = params.blogId;
     url = `http://localhost:3001/blog/${blogId}`;
   }
+  console.log(blogData);
+
   try {
-    const response = await axios({
+    await axios({
       url: url,
       headers: {
         Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
       },
       method: method,
       data: blogData,
     });
+    console.log(blogData);
     return redirect("..");
   } catch (error) {
     console.log(error);

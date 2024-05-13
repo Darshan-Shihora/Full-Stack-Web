@@ -1,14 +1,30 @@
 import express from "express";
 import "dotenv/config";
 import cors from "cors";
+import multer from "multer";
 import blogRouter from "./routes/blog.routes";
 import userRouter from "./routes/user.routes";
 import likeRouter from "./routes/like.routes";
 import { User } from "./models/user.model";
 import { Blog } from "./models/blog.model";
 import { Like } from "./models/likes.model";
+import path from "path";
+// import { fileURLToPath } from "url";
 
 const app = express();
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = dirname(__filename);
+
+export const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "dist/public/images");
+  },
+  filename: (req, file, cb) => {
+    cb(null,  Date.now() + '-' + file.originalname);
+  },
+});
+
+// export const upload = multer({ storage: storage }).single('image');
 
 const allowedDomains = process.env.CORS_ALLOWED_ORIGIN?.split(",");
 const corsOptions = {
@@ -24,6 +40,8 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
+// app.use(multer({ storage: storage }).single("image"));
+app.use(express.static(path.join(__dirname, "public")));
 app.use(userRouter);
 app.use(blogRouter);
 app.use(likeRouter);

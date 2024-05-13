@@ -8,16 +8,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteBlog = exports.editBlog = exports.postBlog = exports.getBlog = exports.getAllBlog = void 0;
 const blog_model_1 = require("../models/blog.model");
 const http_status_codes_1 = require("http-status-codes");
 const index_1 = require("../models/index");
 const sequelize_1 = require("sequelize");
+const moment_1 = __importDefault(require("moment"));
 // GET ALL BLOGS
 const getAllBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = +req.userId;
-    // const userIdParam = userId === undefined ? null : `'${userId}'`;
     const offset = +req.query.offset;
     const limit = +req.query.limit;
     const blogs = yield index_1.sequelize.query(`select 
@@ -45,7 +48,7 @@ const getAllBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
   left join likes l on
     l.blog_id = blog.blog_id
     group by blog.blog_id 
-  order by blog.updatedAt DESC
+  order by blog.updated_at DESC
   limit :limit offset :offset`, {
         replacements: { userId, offset, limit },
         type: sequelize_1.QueryTypes.SELECT,
@@ -72,26 +75,25 @@ exports.getAllBlog = getAllBlog;
 const getBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.blog_id;
     const userId = +req.userId;
-    // const blog = await Blog.findOne({ where: { blog_id: id } });
     const blog = yield index_1.sequelize.query(`
     select 
     blog.blog_id,
-	blog.title,
-  blog.image,
-	blog.date,
-  blog.description,
-  u.user_id,
-  u.name,
-  count(l.user_id) as likes,
+    blog.title,
+    blog.image,
+    blog.date,
+    blog.description,
+    u.user_id,
+    u.name,
+    count(l.user_id) as likes,
     CASE 
-          WHEN EXISTS (
-              SELECT 1 
-              FROM likes l2 
-              WHERE l2.blog_id = blog.blog_id 
-                AND l2.user_id = :userId
-          ) THEN 'false' 
-          ELSE 'true' 
-      END AS canBeLiked
+      WHEN EXISTS (
+        SELECT 1 
+          FROM likes l2 
+            WHERE l2.blog_id = blog.blog_id 
+            AND l2.user_id = :userId
+      ) THEN 'false' 
+      ELSE 'true' 
+    END AS canBeLiked
   from
     blogs as blog
   left join users as u on
@@ -120,14 +122,23 @@ const getBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
 });
 exports.getBlog = getBlog;
 // ADD NEW BLOG
+function formatDate(dateString) {
+    return (0, moment_1.default)(dateString).format("YYYY-MM-DD");
+}
 const postBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { image, title, date, description } = req.body;
+    const { title, date, description } = req.body;
+    const formattedDate = formatDate(date);
+    const image = req.file;
+    console.log(image);
+    const imageUrl = image.buffer;
+    const imageName = Date.now() + "-" + image.originalname;
     const existingBlog = yield blog_model_1.Blog.findOne({ where: { title: title } });
     if (!existingBlog) {
         const blog = yield blog_model_1.Blog.create({
             title: title,
-            image: image,
-            date: date,
+            image: imageUrl,
+            date: formattedDate,
+            imageName: imageName,
             description: description,
             user_id: +req.userId,
         });
@@ -146,15 +157,21 @@ const postBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
 exports.postBlog = postBlog;
 // EDIT BLOG
 const editBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { title, description, date, image } = req.body;
+    const { title, description, date } = req.body;
+    const formattedDate = formatDate(date);
+    const image = req.file;
+    console.log(req.file);
     const id = req.params.blog_id;
+    const imageUrl = image.buffer;
+    const imageName = Date.now() + "-" + image.originalname;
     const editBlog = yield blog_model_1.Blog.findOne({ where: { blog_id: id } });
     console.log(editBlog);
     if (editBlog) {
         editBlog.title = title;
         editBlog.description = description;
-        editBlog.date = date;
-        editBlog.image = image;
+        editBlog.date = formattedDate;
+        editBlog.image = imageUrl;
+        editBlog.imageName = imageName;
         yield editBlog.save();
         res.status(http_status_codes_1.StatusCodes.OK).send({
             message: "Blog edited Successfully",

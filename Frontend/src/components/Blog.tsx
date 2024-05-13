@@ -66,7 +66,7 @@ const Blog: React.FC<{
   }, [liked, count]);
 
   return (
-    <div className=" block m-auto h-auto w-[55vw] border-2 border-gray-100 my-8 pb-4 box-border shadow-sm">
+    <div className="block m-auto h-auto w-[40vw] border-2 border-gray-100 my-8 pb-4 box-border shadow-sm">
       <Link to={`/blog/${props.id}`}>
         <img className="w-[100%] h-96" src={`${props.image}`} alt="" />
       </Link>

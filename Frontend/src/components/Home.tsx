@@ -28,7 +28,7 @@ function Home() {
         <img className="m-auto" src={image} alt="" />
         <Link
           className={`absolute bottom-[45%] right-[45%] rounded bg-white px-10 py-4 text-2xl font-serif text-sky-600 hover:text-white hover:bg-sky-500`}
-          to={localStorage.getItem("name") ? "/blog" : "/login"}
+          to={"/blog"}
         >
           Travel
         </Link>

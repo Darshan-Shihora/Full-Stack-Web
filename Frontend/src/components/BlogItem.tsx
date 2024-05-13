@@ -6,8 +6,12 @@ import heartWithoutColor from "../assests/icons8-heart-noColor.png";
 import heartWithColor from "../assests/icons8-heart-withColor.png";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { Buffer } from "buffer";
 const BlogItem: React.FC<{ blog: any }> = (props) => {
   const submit = useSubmit();
+  const imageBase64 = `${Buffer.from(props.blog.blog[0].image.data).toString(
+    "base64"
+  )}`;
 
   function deleteHandler() {
     const proceed = window.confirm("Are you sure you want to delete it?");
@@ -105,7 +109,7 @@ const BlogItem: React.FC<{ blog: any }> = (props) => {
         </p>
         <img
           className="w-[90%] h-[96%] m-auto block"
-          src={`${props.blog.blog[0].image}`}
+          src={`data:image/jpeg;base64,${imageBase64}`}
           alt=""
         />
 
