@@ -18,6 +18,7 @@ const http_status_codes_1 = require("http-status-codes");
 const index_1 = require("../models/index");
 const sequelize_1 = require("sequelize");
 const moment_1 = __importDefault(require("moment"));
+const sharp_1 = __importDefault(require("sharp"));
 // GET ALL BLOGS
 const getAllBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = +req.userId;
@@ -130,7 +131,9 @@ const postBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
     const formattedDate = formatDate(date);
     const image = req.file;
     console.log(image);
-    const imageUrl = image.buffer;
+    // const imageUrl = image.buffer;
+    const imageUrl = yield (0, sharp_1.default)(image.buffer).resize(1000).rotate().toBuffer();
+    console.log(imageUrl);
     const imageName = Date.now() + "-" + image.originalname;
     const existingBlog = yield blog_model_1.Blog.findOne({ where: { title: title } });
     if (!existingBlog) {
@@ -162,7 +165,7 @@ const editBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
     const image = req.file;
     console.log(req.file);
     const id = req.params.blog_id;
-    const imageUrl = image.buffer;
+    const imageUrl = yield (0, sharp_1.default)(image.buffer).resize(1000).rotate().toBuffer();
     const imageName = Date.now() + "-" + image.originalname;
     const editBlog = yield blog_model_1.Blog.findOne({ where: { blog_id: id } });
     console.log(editBlog);

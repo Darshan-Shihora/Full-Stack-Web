@@ -1,9 +1,6 @@
 import {
   ActionFunction,
-  Route,
   RouterProvider,
-  Routes,
-  BrowserRouter as Router,
   createBrowserRouter,
 } from "react-router-dom";
 import Root from "./root/Root";

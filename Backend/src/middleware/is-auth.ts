@@ -25,7 +25,6 @@ export const isAuth = (req: Request, res: Response, next: NextFunction) => {
       process.env.SECRET_KEY as string
     ) as jwt.JwtPayload;
     req.userId = decodedToken.userId;
-    console.log(req.userId);
     next();
   } catch (error) {
     console.log(error);

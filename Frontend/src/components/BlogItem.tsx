@@ -8,6 +8,9 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Buffer } from "buffer";
 const BlogItem: React.FC<{ blog: any }> = (props) => {
+  const [liked, setLiked] = useState(props.blog.blog[0].canBeLiked);
+  const [count, setCount] = useState(props.blog.blog[0].likes);
+  const navigate = useNavigate();
   const submit = useSubmit();
   const imageBase64 = `${Buffer.from(props.blog.blog[0].image.data).toString(
     "base64"
@@ -21,58 +24,54 @@ const BlogItem: React.FC<{ blog: any }> = (props) => {
     }
   }
 
-  const [liked, setLiked] = useState("");
-  const [count, setCount] = useState(0);
-  const navigate = useNavigate();
-
   const likesHandler = async () => {
     try {
       const token = localStorage.getItem("Token");
       if (!token) {
         return navigate("../../login");
       } else {
-        await axios({
+        const response = await axios({
           method: "POST",
           url: `http://localhost:3001/like/${props.blog.blog[0].blog_id}`,
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        setLiked((prev) => (prev === "" ? props.blog.blog[0].canBeLiked : ""));
-        setCount((prev) => (prev === 0 ? props.blog.blog[0].likes : 0));
+        setLiked(response.data.data[0].canBeLiked);
+        setCount(response.data.data[0].likes);
       }
     } catch (error) {
       console.log(error);
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const token = localStorage.getItem("Token");
-        const postData = await axios({
-          method: "GET",
-          url: `http://localhost:3001/like/${props.blog.blog[0].blog_id}`,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setLiked(() =>
-          postData.data.data[0] ? postData.data.data[0].canBeLiked : ""
-        );
-        setCount(() =>
-          postData.data.data[0] ? postData.data.data[0].likes : ""
-        );
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchData();
-  }, [liked, count]);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const token = localStorage.getItem("Token");
+  //       const postData = await axios({
+  //         method: "GET",
+  //         url: `http://localhost:3001/like/${props.blog.blog[0].blog_id}`,
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
+  //       setLiked(() =>
+  //         postData.data.data[0] ? postData.data.data[0].canBeLiked : ""
+  //       );
+  //       setCount(() =>
+  //         postData.data.data[0] ? postData.data.data[0].likes : ""
+  //       );
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+  //   fetchData();
+  // }, [liked, count, props.blog.blog]);
 
   return (
     <>
-      <div className="block m-auto h-auto w-[60%] border-2 border-gray-100 mt-10 my-4 p-8 box-border shadow-sm">
+      <div className="block m-auto h-auto w-[50%] border-2 border-gray-100 mt-10 my-4 p-8 box-border shadow-sm">
         <div className="flex justify-between m-auto my-6 ml-10">
           <div className="flex">
             <img className="size-14 mr-2" src={img} alt="" />

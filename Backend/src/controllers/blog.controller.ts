@@ -4,6 +4,7 @@ import { StatusCodes } from "http-status-codes";
 import { sequelize } from "../models/index";
 import { QueryTypes } from "sequelize";
 import moment from "moment";
+import sharp from "sharp";
 
 // GET ALL BLOGS
 export const getAllBlog = async (
@@ -137,7 +138,10 @@ export const postBlog = async (
   const image = req.file;
   console.log(image);
 
-  const imageUrl = image.buffer;
+  // const imageUrl = image.buffer;
+  const imageUrl = await sharp(image.buffer).resize(1000).rotate().toBuffer();
+  console.log(imageUrl);
+
   const imageName = Date.now() + "-" + image.originalname;
 
   const existingBlog = await Blog.findOne({ where: { title: title } });
@@ -174,7 +178,7 @@ export const editBlog = async (
   console.log(req.file);
 
   const id = req.params.blog_id;
-  const imageUrl = image.buffer;
+  const imageUrl = await sharp(image.buffer).resize(1000).rotate().toBuffer();
   const imageName = Date.now() + "-" + image.originalname;
   const editBlog: any = await Blog.findOne({ where: { blog_id: id } });
   console.log(editBlog);
