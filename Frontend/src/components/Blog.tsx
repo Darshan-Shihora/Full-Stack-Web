@@ -16,8 +16,8 @@ const Blog: React.FC<{
   likes: number;
   date: string;
 }> = (props) => {
-  const [liked, setLiked] = useState("");
-  const [count, setCount] = useState(0);
+  const [liked, setLiked] = useState(props.canBeLiked);
+  const [count, setCount] = useState(props.likes);
   const navigate = useNavigate();
 
   const likesHandler = async () => {
@@ -26,44 +26,46 @@ const Blog: React.FC<{
       if (!token) {
         return navigate("../login");
       } else {
-        await axios({
+        const response = await axios({
           method: "POST",
           url: `http://localhost:3001/like/${props.id}`,
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        setLiked((prev) => (prev === "" ? props.canBeLiked : ""));
-        setCount((prev) => (prev === 0 ? props.likes : 0));
+        console.log(response.data.data[0]);
+
+        setLiked(response.data.data[0].canBeLiked);
+        setCount(response.data.data[0].likes);
       }
     } catch (error) {
       console.log(error);
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const token = localStorage.getItem("Token");
-        const postData = await axios({
-          method: "GET",
-          url: `http://localhost:3001/like/${props.id}`,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setLiked(() =>
-          postData.data.data[0] ? postData.data.data[0].canBeLiked : ""
-        );
-        setCount(() =>
-          postData.data.data[0] ? postData.data.data[0].likes : ""
-        );
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchData();
-  }, [liked, count]);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const token = localStorage.getItem("Token");
+  //       const postData = await axios({
+  //         method: "GET",
+  //         url: `http://localhost:3001/like/${props.id}`,
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
+  //       setLiked(() =>
+  //         postData.data.data[0] ? postData.data.data[0].canBeLiked : ""
+  //       );
+  //       setCount(() =>
+  //         postData.data.data[0] ? postData.data.data[0].likes : ""
+  //       );
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+  //   fetchData();
+  // }, [liked, count]);
 
   return (
     <div className="block m-auto h-auto w-[40vw] border-2 border-gray-100 my-8 pb-4 box-border shadow-sm">

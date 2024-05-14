@@ -8,6 +8,9 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Buffer } from "buffer";
 const BlogItem: React.FC<{ blog: any }> = (props) => {
+  const [liked, setLiked] = useState("");
+  const [count, setCount] = useState(0);
+  const navigate = useNavigate();
   const submit = useSubmit();
   const imageBase64 = `${Buffer.from(props.blog.blog[0].image.data).toString(
     "base64"
@@ -20,10 +23,6 @@ const BlogItem: React.FC<{ blog: any }> = (props) => {
       submit(null, { method: "delete" });
     }
   }
-
-  const [liked, setLiked] = useState("");
-  const [count, setCount] = useState(0);
-  const navigate = useNavigate();
 
   const likesHandler = async () => {
     try {
@@ -68,7 +67,7 @@ const BlogItem: React.FC<{ blog: any }> = (props) => {
       }
     };
     fetchData();
-  }, [liked, count]);
+  }, [liked, count, props.blog.blog]);
 
   return (
     <>
