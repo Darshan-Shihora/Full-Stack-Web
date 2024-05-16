@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Blog from "./Blog";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
@@ -63,6 +63,10 @@ function BlogList() {
         url: `http://localhost:3001/user/${id}`,
         headers: {
           Authorization: `Bearer ${token}`,
+        },
+        params: {
+          limit: 5,
+          offset: offset,
         },
       });
       const blogsWithImages = response.data.data.map((blog: any) => {
@@ -175,6 +179,9 @@ function BlogList() {
     content = blog;
   }
 
+  const reload = () => {
+    window.location.reload();
+  };
   return (
     <div className="min-h-[30rem]">
       {userBlog.length > 0 ? (
@@ -186,6 +193,12 @@ function BlogList() {
             </div>
           </div>
           {userBlog}
+          <p
+            className="text-md block text-center m-auto mb-4 h-auto w-[60%] cursor-pointer"
+            onClick={reload}
+          >
+            See All
+          </p>
         </>
       ) : (
         <>
