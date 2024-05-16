@@ -9,23 +9,23 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sequelize = void 0;
-const sequelize_1 = require("sequelize");
-require("dotenv/config");
-const sequelize = new sequelize_1.Sequelize(process.env.DB_NAME, process.env.DB_USERNAME, process.env.DB_PASSWORD, {
-    dialect: "mysql",
-    host: process.env.DB_HOST,
-    logging: false,
+exports.postComment = void 0;
+const comment_model_1 = require("../models/comment.model");
+const http_status_codes_1 = require("http-status-codes");
+const postComment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { blogId } = req.params;
+    const { comment } = req.body;
+    const userId = +req.userId;
+    console.log(blogId, comment, userId);
+    const newComment = yield comment_model_1.Comment.create({
+        user_id: userId,
+        blog_id: +blogId,
+        comment,
+    });
+    res.status(http_status_codes_1.StatusCodes.CREATED).send({
+        message: "New comment added",
+        data: newComment,
+    });
 });
-exports.sequelize = sequelize;
-const dbConnection = () => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        yield sequelize.sync();
-        console.log("=> Created a new connection.");
-    }
-    catch (error) {
-        console.error("=> Error syncing table:", error);
-    }
-});
-dbConnection();
-//# sourceMappingURL=index.js.map
+exports.postComment = postComment;
+//# sourceMappingURL=comment.controller.js.map
