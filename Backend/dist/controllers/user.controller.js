@@ -12,12 +12,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.postLogin = exports.postSignUp = void 0;
+exports.postUser = exports.postLogin = exports.postSignUp = void 0;
 const user_model_1 = require("../models/user.model");
 const http_status_codes_1 = require("http-status-codes");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 require("dotenv/config");
+const index_1 = require("../models/index");
+const sequelize_1 = require("sequelize");
 const postSignUp = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { name, email, password } = req.body;
     const existingUser = yield user_model_1.User.findOne({ where: { email: email } });
@@ -76,4 +78,44 @@ const postLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, function
     }
 });
 exports.postLogin = postLogin;
+const postUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { authorId } = req.params;
+    const userId = +req.userId || 0;
+    const blogs = yield index_1.sequelize.query(`select 
+    blog.blog_id,
+    blog.title,
+    blog.image,
+    blog.date,
+    blog.description,
+    u.user_id,
+    u.name,
+    count(l.user_id) as likes,
+    CASE 
+          WHEN EXISTS (
+              SELECT 1 
+              FROM likes l2 
+              WHERE l2.blog_id = blog.blog_id 
+                AND l2.user_id = :userId
+          ) THEN 'false' 
+          ELSE 'true' 
+      END AS canBeLiked
+  from
+    blogs as blog
+  left join users as u on
+    blog.user_id = u.user_id
+  left join likes l on
+    l.blog_id = blog.blog_id
+    where blog.user_id = :authorId
+    group by blog.blog_id 
+  order by blog.updated_at DESC`, {
+        replacements: { userId, authorId },
+        type: sequelize_1.QueryTypes.SELECT,
+        raw: true,
+    });
+    res.status(http_status_codes_1.StatusCodes.OK).send({
+        message: "Get blogs for particular user",
+        data: blogs,
+    });
+});
+exports.postUser = postUser;
 //# sourceMappingURL=user.controller.js.map

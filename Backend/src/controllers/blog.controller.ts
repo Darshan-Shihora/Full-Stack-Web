@@ -6,6 +6,52 @@ import { QueryTypes } from "sequelize";
 import moment from "moment";
 import sharp from "sharp";
 
+export const getBlogs = async (
+  loginUserId: string,
+  limit: number,
+  offset: number,
+  authorUserId?: number
+) => {
+  const blogs = await sequelize.query(
+    `select 
+    blog.blog_id,
+    blog.title,
+    blog.image,
+    blog.date,
+    blog.description,
+    u.user_id,
+    u.name,
+    count(l.user_id) as likes,
+    CASE 
+          WHEN EXISTS (
+              SELECT 1 
+              FROM likes l2 
+              WHERE l2.blog_id = blog.blog_id 
+                AND l2.user_id = :userId
+          ) THEN 'false' 
+          ELSE 'true' 
+      END AS canBeLiked
+  from
+    blogs as blog
+  left join users as u on
+    blog.user_id = u.user_id
+  left join likes l on
+    l.blog_id = blog.blog_id
+  ` +
+      `${authorUserId ? `where blog.user_id = :authorUserId` : ``}` +
+      `
+    group by blog.blog_id 
+  order by blog.updated_at DESC
+  limit :limit offset :offset`,
+    {
+      replacements: { userId: loginUserId, offset, limit, authorUserId },
+      type: QueryTypes.SELECT,
+      raw: true,
+    }
+  );
+  const blog = await Blog.findAll();
+};
+
 // GET ALL BLOGS
 export const getAllBlog = async (
   req: Request,
@@ -49,13 +95,13 @@ export const getAllBlog = async (
       raw: true,
     }
   );
-  const blog = await Blog.findAll();
+  const blogCount = await Blog.count();
 
   if (blogs && blogs.length > 0) {
     res.status(StatusCodes.OK).send({
       message: "Blog found Successfully",
       data: blogs,
-      length: blog.length,
+      length: blogCount,
     });
   } else {
     res.status(StatusCodes.NOT_FOUND).send({
