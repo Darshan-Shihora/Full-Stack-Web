@@ -5,7 +5,7 @@ import heartWithColor from "../assests/icons8-heart-withColor.png";
 import eyeImg from "../assests/icons8-eye-16.png";
 import messageImg from "../assests/icons8-message-16.png";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const Blog: React.FC<{
   id: string;
@@ -16,6 +16,8 @@ const Blog: React.FC<{
   likes: number;
   date: string;
   user_id: number;
+  getUserBlog?: (id) => Promise<void>;
+  showNameField?: boolean;
 }> = (props) => {
   const [liked, setLiked] = useState(props.canBeLiked);
   const [count, setCount] = useState(props.likes);
@@ -68,35 +70,32 @@ const Blog: React.FC<{
   //   fetchData();
   // }, [liked, count]);
 
-  const getUserBlog = async () => {
-    const token = localStorage.getItem("Token");
-    const response = await axios({
-      method: "GET",
-      url: `http://localhost:3001/user/${props.user_id}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    console.log(response.data.data);
+  const handleClick = () => {
+    props.getUserBlog(props.user_id);
   };
 
   return (
     <div className="block m-auto h-auto w-[40vw] border-2 border-gray-100 my-8 pb-4 box-border shadow-sm">
       <Link to={`/blog/${props.id}`}>
-        <img className="w-[100%] h-96" src={`${props.image}`} alt="" />
+        <img className="w-[100%] h-96 mb-6" src={`${props.image}`} alt="" />
       </Link>
-      <div className="flex m-auto my-6 ml-6">
-        <img className="size-14 mr-2" src={img} alt="" />
-        <div className="text-start items-center text-gray-400">
-          <p className="cursor-pointer" onClick={getUserBlog}>
-            {props.name}
-          </p>
-          <p>{props.date}</p>
+      {props.showNameField ? (
+        <></>
+      ) : (
+        <div className="flex m-auto mb-6 ml-6">
+          <img className="size-14 mr-2" src={img} alt="" />
+          <div className="text-start items-center text-gray-400">
+            <p className="cursor-pointer" onClick={handleClick}>
+              {props.name}
+            </p>
+            <p>{props.date}</p>
+          </div>
         </div>
-      </div>
+      )}
+
       <Link
         to={`/blog/${props.id}`}
-        className="ml-6 text-3xl font-serif font-medium hover:text-sky-500"
+        className="ml-6 mt-6 text-3xl font-serif font-medium hover:text-sky-500"
       >
         {props.title}
       </Link>

@@ -5,6 +5,7 @@ import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
 import { Buffer } from "buffer";
+import img from "../assests/icons8-administrator-male-96.png";
 
 type Blogs = {
   blog_id: string;
@@ -15,6 +16,8 @@ type Blogs = {
   likes: number;
   date: string;
   user_id: number;
+  getUserBlog?: Promise<void>;
+  showNameField?: boolean;
 };
 // const BLOGS: Blogs[] = [
 //   {
@@ -39,6 +42,8 @@ type Blogs = {
 
 function BlogList() {
   const [blogs, setBlogs] = useState<Blogs[]>([]);
+  const [userBlogs, setUserBlogs] = useState([]);
+  const [showNameField, setShowNameFiled] = useState(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [length, setLength] = useState(0);
   const [offset, setOffset] = useState(0);
@@ -48,6 +53,38 @@ function BlogList() {
 
   const handleNextPage = () => {
     setOffset((prevOffset) => prevOffset + 5);
+  };
+
+  const getUserBlog = async (id) => {
+    const token = localStorage.getItem("Token");
+    try {
+      const response = await axios({
+        method: "GET",
+        url: `http://localhost:3001/user/${id}`,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const blogsWithImages = response.data.data.map((blog: any) => {
+        const imageBase64 = `${Buffer.from(blog.image.data).toString(
+          "base64"
+        )}`;
+        return {
+          ...blog,
+          image: `data:image/jpeg;base64,${imageBase64}`,
+        };
+      });
+      // console.log(response.data.data);
+      setUserBlogs(blogsWithImages);
+      setShowNameFiled(true);
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: "smooth",
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   useEffect(() => {
@@ -74,7 +111,6 @@ function BlogList() {
             const imageBase64 = `${Buffer.from(blog.image.data).toString(
               "base64"
             )}`;
-
             return {
               ...blog,
               image: `data:image/jpeg;base64,${imageBase64}`,
@@ -108,8 +144,27 @@ function BlogList() {
       title={blog.title}
       canBeLiked={blog.canBeLiked}
       likes={blog.likes}
+      getUserBlog={getUserBlog}
     />
   ));
+
+  const userBlog = userBlogs.map((blog) => {
+    return (
+      <Blog
+        key={blog.blog_id}
+        id={blog.blog_id}
+        user_id={blog.user_id}
+        name={blog.name}
+        date={blog.date}
+        image={blog.image}
+        title={blog.title}
+        canBeLiked={blog.canBeLiked}
+        likes={blog.likes}
+        showNameField={showNameField}
+      />
+    );
+  });
+  console.log(userBlog);
 
   let content: any;
 
@@ -122,36 +177,50 @@ function BlogList() {
 
   return (
     <div className="min-h-[30rem]">
-      {localStorage.getItem("Token") ? (
-        <NavLink
-          to="new"
-          className="bg-sky-500 w-32 my-4 p-4 text-xl block m-auto items-center text-center text-white hover:bg-sky-600 rounded"
-        >
-          Add Blog
-        </NavLink>
+      {userBlog.length > 0 ? (
+        <>
+          <div className="flex m-auto justify-center my-6 ml-6">
+            <img className="size-14 mr-2" src={img} alt="" />
+            <div className="text-start text-4xl items-center text-gray-400">
+              {userBlog[0].props.name}
+            </div>
+          </div>
+          {userBlog}
+        </>
       ) : (
-        <></>
-      )}
+        <>
+          {localStorage.getItem("Token") ? (
+            <NavLink
+              to="new"
+              className="bg-sky-500 w-32 my-4 p-4 text-xl block m-auto items-center text-center text-white hover:bg-sky-600 rounded"
+            >
+              Add Blog
+            </NavLink>
+          ) : (
+            <></>
+          )}
 
-      {content}
-      <div className="text-2xl flex justify-center mb-6">
-        <button
-          className={`bg-blue-400 mr-2 w-8 h-8 rounded hover:bg-blue-500 ${
-            offset === 0 ? "invisible" : ""
-          } `}
-          onClick={handlePrevPage}
-        >
-          <FontAwesomeIcon icon={faAngleLeft} />
-        </button>
-        <button
-          className={`bg-blue-400 ml-2 w-8 h-8 rounded hover:bg-blue-500 ${
-            offset + 5 >= length ? "invisible" : ""
-          } `}
-          onClick={handleNextPage}
-        >
-          <FontAwesomeIcon icon={faAngleRight} />
-        </button>
-      </div>
+          {content}
+          <div className="text-2xl flex justify-center mb-6">
+            <button
+              className={`bg-blue-400 mr-2 w-8 h-8 rounded hover:bg-blue-500 ${
+                offset === 0 ? "invisible" : ""
+              } `}
+              onClick={handlePrevPage}
+            >
+              <FontAwesomeIcon icon={faAngleLeft} />
+            </button>
+            <button
+              className={`bg-blue-400 ml-2 w-8 h-8 rounded hover:bg-blue-500 ${
+                offset + 5 >= length ? "invisible" : ""
+              } `}
+              onClick={handleNextPage}
+            >
+              <FontAwesomeIcon icon={faAngleRight} />
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 }
