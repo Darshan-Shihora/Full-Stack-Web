@@ -15,6 +15,7 @@ const Blog: React.FC<{
   canBeLiked: string;
   likes: number;
   date: string;
+  user_id: number;
 }> = (props) => {
   const [liked, setLiked] = useState(props.canBeLiked);
   const [count, setCount] = useState(props.likes);
@@ -67,6 +68,18 @@ const Blog: React.FC<{
   //   fetchData();
   // }, [liked, count]);
 
+  const getUserBlog = async () => {
+    const token = localStorage.getItem("Token");
+    const response = await axios({
+      method: "GET",
+      url: `http://localhost:3001/user/${props.user_id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    console.log(response.data.data);
+  };
+
   return (
     <div className="block m-auto h-auto w-[40vw] border-2 border-gray-100 my-8 pb-4 box-border shadow-sm">
       <Link to={`/blog/${props.id}`}>
@@ -75,7 +88,9 @@ const Blog: React.FC<{
       <div className="flex m-auto my-6 ml-6">
         <img className="size-14 mr-2" src={img} alt="" />
         <div className="text-start items-center text-gray-400">
-          <p>{props.name}</p>
+          <p className="cursor-pointer" onClick={getUserBlog}>
+            {props.name}
+          </p>
           <p>{props.date}</p>
         </div>
       </div>

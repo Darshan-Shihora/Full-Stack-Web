@@ -14,6 +14,7 @@ type Blogs = {
   canBeLiked: string;
   likes: number;
   date: string;
+  user_id: number;
 };
 // const BLOGS: Blogs[] = [
 //   {
@@ -100,6 +101,7 @@ function BlogList() {
     <Blog
       key={blog.blog_id}
       id={blog.blog_id}
+      user_id={blog.user_id}
       name={blog.name}
       date={blog.date}
       image={blog.image}
