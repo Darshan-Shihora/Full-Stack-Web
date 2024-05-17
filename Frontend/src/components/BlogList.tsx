@@ -8,7 +8,7 @@ import { Buffer } from "buffer";
 import img from "../assests/icons8-administrator-male-96.png";
 
 type Blogs = {
-  blog_id: string;
+  blog_id: string
   image: string;
   name: string;
   title: string;
@@ -109,7 +109,6 @@ function BlogList() {
               offset: offset,
             },
           });
-          console.log(blogresponse.data.data);
 
           const blogsWithImages = blogresponse.data.data.map((blog: any) => {
             const imageBase64 = `${Buffer.from(blog.image.data).toString(
