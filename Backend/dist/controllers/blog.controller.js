@@ -12,12 +12,51 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteBlog = exports.editBlog = exports.postBlog = exports.getBlog = exports.getAllBlog = void 0;
+exports.deleteBlog = exports.editBlog = exports.postBlog = exports.getBlog = exports.getAllBlog = exports.getBlogs = void 0;
 const blog_model_1 = require("../models/blog.model");
 const http_status_codes_1 = require("http-status-codes");
 const index_1 = require("../models/index");
 const sequelize_1 = require("sequelize");
 const moment_1 = __importDefault(require("moment"));
+const sharp_1 = __importDefault(require("sharp"));
+const getBlogs = (loginUserId, limit, offset, authorUserId) => __awaiter(void 0, void 0, void 0, function* () {
+    const blogs = yield index_1.sequelize.query(`select 
+    blog.blog_id,
+    blog.title,
+    blog.image,
+    blog.date,
+    blog.description,
+    u.user_id,
+    u.name,
+    count(l.user_id) as likes,
+    CASE 
+          WHEN EXISTS (
+              SELECT 1 
+              FROM likes l2 
+              WHERE l2.blog_id = blog.blog_id 
+                AND l2.user_id = :userId
+          ) THEN 'false' 
+          ELSE 'true' 
+      END AS canBeLiked
+  from
+    blogs as blog
+  left join users as u on
+    blog.user_id = u.user_id
+  left join likes l on
+    l.blog_id = blog.blog_id
+  ` +
+        `${authorUserId ? `where blog.user_id = :authorUserId` : ``}` +
+        `
+    group by blog.blog_id 
+  order by blog.updated_at DESC
+  limit :limit offset :offset`, {
+        replacements: { userId: loginUserId, offset, limit, authorUserId },
+        type: sequelize_1.QueryTypes.SELECT,
+        raw: true,
+    });
+    const blog = yield blog_model_1.Blog.findAll();
+});
+exports.getBlogs = getBlogs;
 // GET ALL BLOGS
 const getAllBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = +req.userId;
@@ -54,12 +93,12 @@ const getAllBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
         type: sequelize_1.QueryTypes.SELECT,
         raw: true,
     });
-    const blog = yield blog_model_1.Blog.findAll();
+    const blogCount = yield blog_model_1.Blog.count();
     if (blogs && blogs.length > 0) {
         res.status(http_status_codes_1.StatusCodes.OK).send({
             message: "Blog found Successfully",
             data: blogs,
-            length: blog.length,
+            length: blogCount,
         });
     }
     else {
@@ -130,7 +169,9 @@ const postBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
     const formattedDate = formatDate(date);
     const image = req.file;
     console.log(image);
-    const imageUrl = image.buffer;
+    // const imageUrl = image.buffer;
+    const imageUrl = yield (0, sharp_1.default)(image.buffer).resize(1000).rotate().toBuffer();
+    console.log(imageUrl);
     const imageName = Date.now() + "-" + image.originalname;
     const existingBlog = yield blog_model_1.Blog.findOne({ where: { title: title } });
     if (!existingBlog) {
@@ -162,7 +203,7 @@ const editBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
     const image = req.file;
     console.log(req.file);
     const id = req.params.blog_id;
-    const imageUrl = image.buffer;
+    const imageUrl = yield (0, sharp_1.default)(image.buffer).resize(1000).rotate().toBuffer();
     const imageName = Date.now() + "-" + image.originalname;
     const editBlog = yield blog_model_1.Blog.findOne({ where: { blog_id: id } });
     console.log(editBlog);

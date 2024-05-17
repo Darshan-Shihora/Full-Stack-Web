@@ -18,7 +18,6 @@ const isAuth = (req, res, next) => {
     try {
         decodedToken = jsonwebtoken_1.default.verify(token, process.env.SECRET_KEY);
         req.userId = decodedToken.userId;
-        console.log(req.userId);
         next();
     }
     catch (error) {

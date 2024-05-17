@@ -5,7 +5,7 @@ import heartWithColor from "../assests/icons8-heart-withColor.png";
 import eyeImg from "../assests/icons8-eye-16.png";
 import messageImg from "../assests/icons8-message-16.png";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const Blog: React.FC<{
   id: string;
@@ -15,9 +15,12 @@ const Blog: React.FC<{
   canBeLiked: string;
   likes: number;
   date: string;
+  user_id: number;
+  getUserBlog?: (id) => Promise<void>;
+  showNameField?: boolean;
 }> = (props) => {
-  const [liked, setLiked] = useState("");
-  const [count, setCount] = useState(0);
+  const [liked, setLiked] = useState(props.canBeLiked);
+  const [count, setCount] = useState(props.likes);
   const navigate = useNavigate();
 
   const likesHandler = async () => {
@@ -26,60 +29,73 @@ const Blog: React.FC<{
       if (!token) {
         return navigate("../login");
       } else {
-        await axios({
+        const response = await axios({
           method: "POST",
           url: `http://localhost:3001/like/${props.id}`,
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        setLiked((prev) => (prev === "" ? props.canBeLiked : ""));
-        setCount((prev) => (prev === 0 ? props.likes : 0));
+        console.log(response.data.data[0]);
+
+        setLiked(response.data.data[0].canBeLiked);
+        setCount(response.data.data[0].likes);
       }
     } catch (error) {
       console.log(error);
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const token = localStorage.getItem("Token");
-        const postData = await axios({
-          method: "GET",
-          url: `http://localhost:3001/like/${props.id}`,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setLiked(() =>
-          postData.data.data[0] ? postData.data.data[0].canBeLiked : ""
-        );
-        setCount(() =>
-          postData.data.data[0] ? postData.data.data[0].likes : ""
-        );
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchData();
-  }, [liked, count]);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const token = localStorage.getItem("Token");
+  //       const postData = await axios({
+  //         method: "GET",
+  //         url: `http://localhost:3001/like/${props.id}`,
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
+  //       setLiked(() =>
+  //         postData.data.data[0] ? postData.data.data[0].canBeLiked : ""
+  //       );
+  //       setCount(() =>
+  //         postData.data.data[0] ? postData.data.data[0].likes : ""
+  //       );
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+  //   fetchData();
+  // }, [liked, count]);
+
+  const handleClick = () => {
+    props.getUserBlog(props.user_id);
+  };
 
   return (
     <div className="block m-auto h-auto w-[40vw] border-2 border-gray-100 my-8 pb-4 box-border shadow-sm">
       <Link to={`/blog/${props.id}`}>
-        <img className="w-[100%] h-96" src={`${props.image}`} alt="" />
+        <img className="w-[100%] h-96 mb-6" src={`${props.image}`} alt="" />
       </Link>
-      <div className="flex m-auto my-6 ml-6">
-        <img className="size-14 mr-2" src={img} alt="" />
-        <div className="text-start items-center text-gray-400">
-          <p>{props.name}</p>
-          <p>{props.date}</p>
+      {props.showNameField ? (
+        <></>
+      ) : (
+        <div className="flex m-auto mb-6 ml-6">
+          <img className="size-14 mr-2" src={img} alt="" />
+          <div className="text-start items-center text-gray-400">
+            <p className="cursor-pointer" onClick={handleClick}>
+              {props.name}
+            </p>
+            <p>{props.date}</p>
+          </div>
         </div>
-      </div>
+      )}
+
       <Link
         to={`/blog/${props.id}`}
-        className="ml-6 text-3xl font-serif font-medium hover:text-sky-500"
+        className="ml-6 mt-6 text-3xl font-serif font-medium hover:text-sky-500"
       >
         {props.title}
       </Link>

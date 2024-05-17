@@ -21,15 +21,68 @@ const postLike = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
     });
     try {
         if (existingLike) {
+            yield existingLike.destroy();
+            const response = yield index_1.sequelize.query(`select
+        blog.blog_id,
+        u.user_id,
+        u.name,
+        count(l.user_id) as likes,
+        CASE
+              WHEN EXISTS (
+                  SELECT 1
+                  FROM likes l2
+                  WHERE l2.blog_id = blog.blog_id
+                    AND l2.user_id = ${req.userId}
+              ) THEN 'false'
+              ELSE 'true'
+          END AS canBeLiked
+      from
+        blogs as blog
+      left join users as u on
+        blog.user_id = u.user_id
+      left join likes l on
+        l.blog_id = blog.blog_id
+        where blog.blog_id = :blogId
+        group by blog.blog_id;`, {
+                replacements: { blogId },
+                type: sequelize_1.QueryTypes.SELECT,
+                raw: true,
+            });
             res.send({
                 message: "User Unliked the blog",
+                data: response,
             });
-            yield existingLike.destroy();
         }
         else {
-            const response = yield likes_model_1.Like.create({
+            yield likes_model_1.Like.create({
                 userId: +req.userId,
                 blogId: +blogId,
+            });
+            const response = yield index_1.sequelize.query(`select
+        blog.blog_id,
+        u.user_id,
+        u.name,
+        count(l.user_id) as likes,
+        CASE
+              WHEN EXISTS (
+                  SELECT 1
+                  FROM likes l2
+                  WHERE l2.blog_id = blog.blog_id
+                    AND l2.user_id = ${req.userId}
+              ) THEN 'false'
+              ELSE 'true'
+          END AS canBeLiked
+      from
+        blogs as blog
+      left join users as u on
+        blog.user_id = u.user_id
+      left join likes l on
+        l.blog_id = blog.blog_id
+        where blog.blog_id = :blogId
+        group by blog.blog_id;`, {
+                replacements: { blogId },
+                type: sequelize_1.QueryTypes.SELECT,
+                raw: true,
             });
             res.status(http_status_codes_1.StatusCodes.CREATED).send({
                 message: "User Liked the blog",
