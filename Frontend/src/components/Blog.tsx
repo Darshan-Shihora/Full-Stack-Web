@@ -46,30 +46,6 @@ const Blog: React.FC<{
     }
   };
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const token = localStorage.getItem("Token");
-  //       const postData = await axios({
-  //         method: "GET",
-  //         url: `http://localhost:3001/like/${props.id}`,
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       });
-  //       setLiked(() =>
-  //         postData.data.data[0] ? postData.data.data[0].canBeLiked : ""
-  //       );
-  //       setCount(() =>
-  //         postData.data.data[0] ? postData.data.data[0].likes : ""
-  //       );
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-  //   fetchData();
-  // }, [liked, count]);
-
   const handleClick = () => {
     props.getUserBlog(props.user_id);
   };

@@ -18,7 +18,6 @@ const postComment = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
     const { blogId } = req.params;
     const { comment } = req.body;
     const userId = +req.userId;
-    console.log(blogId, comment, userId);
     const newComment = yield comment_model_1.Comment.create({
         user_id: userId,
         blog_id: +blogId,
@@ -42,7 +41,8 @@ const getComment = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
   left join users u on
     c.user_id = u.user_id
   where
-    c.blog_id = :blogId;
+    c.blog_id = :blogId
+    order by c.created_at desc; 
   `, {
         type: sequelize_1.QueryTypes.SELECT,
         replacements: { blogId },

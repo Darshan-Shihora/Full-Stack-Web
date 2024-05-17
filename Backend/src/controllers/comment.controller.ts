@@ -12,13 +12,13 @@ export const postComment = async (
   const { blogId } = req.params;
   const { comment } = req.body;
   const userId = +req.userId;
-  console.log(blogId, comment, userId);
 
   const newComment = await Comment.create({
     user_id: userId,
     blog_id: +blogId,
     comment,
   });
+
   res.status(StatusCodes.CREATED).send({
     message: "New comment added",
     data: newComment,
@@ -42,7 +42,8 @@ export const getComment = async (
   left join users u on
     c.user_id = u.user_id
   where
-    c.blog_id = :blogId;
+    c.blog_id = :blogId
+    order by c.created_at desc; 
   `,
     {
       type: QueryTypes.SELECT,
