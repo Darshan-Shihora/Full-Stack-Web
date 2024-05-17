@@ -1,20 +1,40 @@
 import { Link, useNavigate, useSubmit } from "react-router-dom";
 import img from "../assests/icons8-administrator-male-96.png";
-import eyeImg from "../assests/icons8-eye-16.png";
-import messageImg from "../assests/icons8-message-16.png";
 import heartWithoutColor from "../assests/icons8-heart-noColor.png";
 import heartWithColor from "../assests/icons8-heart-withColor.png";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Buffer } from "buffer";
+
 const BlogItem: React.FC<{ blog: any }> = (props) => {
   const [liked, setLiked] = useState(props.blog.blog[0].canBeLiked);
   const [count, setCount] = useState(props.blog.blog[0].likes);
+  const [comment, setComment] = useState("");
+  const [comments, setComments] = useState([]);
+  const [callBack, setCallBack] = useState("");
   const navigate = useNavigate();
   const submit = useSubmit();
   const imageBase64 = `${Buffer.from(props.blog.blog[0].image.data).toString(
     "base64"
   )}`;
+
+  useEffect(() => {
+    const fetchComments = async () => {
+      const token = localStorage.getItem("Token");
+      if (token) {
+        const response = await axios({
+          method: "GET",
+          url: `http://localhost:3001/comment/${props.blog.blog[0].blog_id}`,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        console.log(response.data.data);
+        setComments(response.data.data);
+      }
+    };
+    fetchComments();
+  }, [callBack]);
 
   function deleteHandler() {
     const proceed = window.confirm("Are you sure you want to delete it?");
@@ -45,29 +65,32 @@ const BlogItem: React.FC<{ blog: any }> = (props) => {
     }
   };
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const token = localStorage.getItem("Token");
-  //       const postData = await axios({
-  //         method: "GET",
-  //         url: `http://localhost:3001/like/${props.blog.blog[0].blog_id}`,
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       });
-  //       setLiked(() =>
-  //         postData.data.data[0] ? postData.data.data[0].canBeLiked : ""
-  //       );
-  //       setCount(() =>
-  //         postData.data.data[0] ? postData.data.data[0].likes : ""
-  //       );
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-  //   fetchData();
-  // }, [liked, count, props.blog.blog]);
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    e.preventDefault();
+    setComment(e.target.value);
+  };
+
+  const handleSubmit = async () => {
+    const token = localStorage.getItem("Token");
+    if (token) {
+      if (comment.trim() !== "") {
+        await axios({
+          method: "POST",
+          url: `http://localhost:3001/comment/${props.blog.blog[0].blog_id}`,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          data: {
+            comment: comment,
+          },
+        });
+        setCallBack(comment);
+        setComment("");
+      }
+    } else {
+      return navigate("../../login");
+    }
+  };
 
   return (
     <>
@@ -119,14 +142,8 @@ const BlogItem: React.FC<{ blog: any }> = (props) => {
         <p className="mx-10 text-xl font-serif mt-5">
           {props.blog.blog[0].description}
         </p>
-        <div className="border-t-2 flex mx-6 my-4 pt-3 relative">
-          <p className="flex pr-4">
-            <img className="pr-[3px] w-6" src={eyeImg} alt="" />
-            100
-          </p>
-          <p className="flex">
-            <img className="pr-[4px] w-6" src={messageImg} alt="" />2
-          </p>
+        <div className="border-t-2 flex mx-8 my-4 pt-3 relative">
+          <p>2 comments</p>
           <p className="flex absolute left-[96%]">
             <img
               className="pr-[4px] w-6 cursor-pointer"
@@ -137,10 +154,42 @@ const BlogItem: React.FC<{ blog: any }> = (props) => {
             {count}
           </p>
         </div>
+        <div className="">
+          <ul className="ml-6">
+            {comments.map((comment, index) => (
+              <div
+                key={index}
+                className="border-b border-black border-solid my-2"
+              >
+                <p>{comment.name}</p>
+                <li>{comment.comment}</li>
+              </div>
+            ))}
+          </ul>
+          <div className="flex justify-center">
+            <textarea
+              value={comment}
+              onChange={handleChange}
+              name="comment"
+              id="comment"
+              placeholder="Write your comment..."
+              className="border-solid border border-black p-2"
+              rows={3}
+              cols={50}
+            />
+            <button
+              onClick={handleSubmit}
+              type="submit"
+              className="ml-4 bg-sky-400 px-4 rounded h-8 my-auto text-white hover:bg-sky-600 text-md"
+            >
+              Submit
+            </button>
+          </div>
+        </div>
       </div>
       <Link
         to="/blog"
-        className="text-md block text-end m-auto mb-4 h-auto w-[60%]"
+        className="text-md block text-center m-auto mb-4 h-auto w-[60%]"
       >
         See All
       </Link>
