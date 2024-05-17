@@ -81,15 +81,15 @@ const Blog: React.FC<{
       >
         Click here to read the full blog
       </Link>
-      <div className="border-t-2 flex mx-6 my-4 pt-3 relative">
-        <p className="flex pr-4">
+      <div className="border-t-2 flex justify-end mx-6 my-4 pt-3 relative">
+        {/* <p className="flex pr-4">
           <img className="pr-[3px] w-6" src={eyeImg} alt="" />
           100
         </p>
         <p className="flex">
           <img className="pr-[4px] w-6" src={messageImg} alt="" />2
-        </p>
-        <p className="flex ml-[80%] ">
+        </p> */}
+        <p className="flex">
           <button onClick={likesHandler}>
             <img
               className="pr-[4px] w-6 cursor-pointer"

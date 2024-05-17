@@ -3,6 +3,7 @@ import { Comment } from "../models/comment.model";
 import { StatusCodes } from "http-status-codes";
 import { sequelize } from "../models/index";
 import { QueryTypes } from "sequelize";
+import moment from "moment";
 
 export const postComment = async (
   req: Request,
@@ -25,13 +26,19 @@ export const postComment = async (
   });
 };
 
+type comment = {
+  name: string;
+  comment: string;
+  created_at: string;
+};
+
 export const getComment = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   const { blogId } = req.params;
-  const comment = await sequelize.query(
+  const comment: comment[] = await sequelize.query(
     `
     select
     u.name,
@@ -51,8 +58,23 @@ export const getComment = async (
       raw: true,
     }
   );
+
+  comment.map((com) => {
+    const formattedDate = moment(com.created_at)
+      .utcOffset("+00:00")
+      .format("DD MMM YYYY hh:mm A");
+    console.log(formattedDate);
+    com.created_at = formattedDate;
+  });
+
+  const commentsCount = await Comment.count({
+    where: {
+      blog_id: blogId,
+    },
+  });
   res.status(StatusCodes.OK).send({
     message: "Successfully fetch the comments",
     data: comment,
+    count: commentsCount,
   });
 };

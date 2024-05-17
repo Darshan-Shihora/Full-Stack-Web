@@ -5,6 +5,8 @@ import heartWithColor from "../assests/icons8-heart-withColor.png";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Buffer } from "buffer";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faAngleLeft } from "@fortawesome/free-solid-svg-icons";
 
 const BlogItem: React.FC<{ blog: any }> = (props) => {
   const [liked, setLiked] = useState(props.blog.blog[0].canBeLiked);
@@ -12,6 +14,7 @@ const BlogItem: React.FC<{ blog: any }> = (props) => {
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
   const [callBack, setCallBack] = useState("");
+  const [commentCount, setCommentCount] = useState(0);
   const navigate = useNavigate();
   const submit = useSubmit();
   const imageBase64 = `${Buffer.from(props.blog.blog[0].image.data).toString(
@@ -29,8 +32,9 @@ const BlogItem: React.FC<{ blog: any }> = (props) => {
             Authorization: `Bearer ${token}`,
           },
         });
-        console.log(response.data.data);
+        setCommentCount(response.data.count);
         setComments(response.data.data);
+        console.log(response.data.data);
       }
     };
     fetchComments();
@@ -95,6 +99,9 @@ const BlogItem: React.FC<{ blog: any }> = (props) => {
   return (
     <>
       <div className="block m-auto h-auto w-[50%] border-2 border-gray-100 mt-10 my-4 p-8 box-border shadow-sm">
+        <Link to="/blog" className="text-md block ml-2 mb-4 h-auto">
+          <FontAwesomeIcon icon={faAngleLeft} />
+        </Link>
         <div className="flex justify-between m-auto my-6 ml-10">
           <div className="flex">
             <img className="size-14 mr-2" src={img} alt="" />
@@ -143,7 +150,7 @@ const BlogItem: React.FC<{ blog: any }> = (props) => {
           {props.blog.blog[0].description}
         </p>
         <div className="border-t-2 flex mx-8 my-4 pt-3 relative">
-          <p>2 comments</p>
+          <p>{commentCount} comments</p>
           <p className="flex absolute left-[96%]">
             <img
               className="pr-[4px] w-6 cursor-pointer"
@@ -154,45 +161,46 @@ const BlogItem: React.FC<{ blog: any }> = (props) => {
             {count}
           </p>
         </div>
-        <div className="">
-          <ul className="ml-6">
-            {comments.map((comment, index) => (
-              <div
-                key={index}
-                className="border-b border-black border-solid my-2"
-              >
-                <p>{comment.name}</p>
-                <li>{comment.comment}</li>
-              </div>
-            ))}
-          </ul>
-          <div className="flex justify-center">
-            <textarea
-              value={comment}
-              onChange={handleChange}
-              name="comment"
-              id="comment"
-              placeholder="Write your comment..."
-              className="border-solid border border-black p-2"
-              rows={3}
-              cols={50}
-            />
-            <button
-              onClick={handleSubmit}
-              type="submit"
-              className="ml-4 bg-sky-400 px-4 rounded h-8 my-auto text-white hover:bg-sky-600 text-md"
-            >
-              Submit
-            </button>
-          </div>
-        </div>
       </div>
-      <Link
-        to="/blog"
-        className="text-md block text-center m-auto mb-4 h-auto w-[60%]"
-      >
-        See All
-      </Link>
+      <div className="flex justify-center mt-4">
+        <textarea
+          value={comment}
+          onChange={handleChange}
+          name="comment"
+          id="comment"
+          placeholder="Write your comment..."
+          className="border-solid border border-black p-2"
+          rows={3}
+          cols={50}
+        />
+        <button
+          onClick={handleSubmit}
+          type="submit"
+          className="ml-4 bg-sky-400 px-4 rounded h-8 my-auto text-white hover:bg-sky-600 text-md"
+        >
+          Submit
+        </button>
+      </div>
+      <div className="block m-auto h-auto w-[60%] border-b-2 border-gray-200 mt-10 my-2 p-8 box-border shadow-sm">
+        <p className="text-xl font-medium pl-3">Comments</p>
+        <ul className="mx-8">
+          {comments.map((comment, index) => (
+            <div
+              key={index}
+              className="border-b border-gray-200 border-solid my-3 pl-3 py-2"
+            >
+              <div className="flex items-center relative">
+                <img className="size-12 mr-2 " src={img} alt="" />
+                <p className="text-gray-400 text-md">{comment.name}</p>
+                <p className="right-0 absolute pr-4 text-gray-400 text-md">
+                  {comment.created_at}
+                </p>
+              </div>
+              <li>{comment.comment}</li>
+            </div>
+          ))}
+        </ul>
+      </div>
     </>
   );
 };

@@ -167,7 +167,6 @@ function BlogList() {
       />
     );
   });
-  console.log(userBlog);
 
   let content: any;
 
