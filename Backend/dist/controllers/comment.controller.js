@@ -9,9 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.postComment = void 0;
+exports.getComment = exports.postComment = void 0;
 const comment_model_1 = require("../models/comment.model");
 const http_status_codes_1 = require("http-status-codes");
+const index_1 = require("../models/index");
+const sequelize_1 = require("sequelize");
 const postComment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { blogId } = req.params;
     const { comment } = req.body;
@@ -28,4 +30,28 @@ const postComment = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
     });
 });
 exports.postComment = postComment;
+const getComment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { blogId } = req.params;
+    const comment = yield index_1.sequelize.query(`
+    select
+    u.name,
+    comment,
+    c.created_at 
+  from
+    comments c
+  left join users u on
+    c.user_id = u.user_id
+  where
+    c.blog_id = :blogId;
+  `, {
+        type: sequelize_1.QueryTypes.SELECT,
+        replacements: { blogId },
+        raw: true,
+    });
+    res.status(http_status_codes_1.StatusCodes.OK).send({
+        message: "Successfully fetch the comments",
+        data: comment,
+    });
+});
+exports.getComment = getComment;
 //# sourceMappingURL=comment.controller.js.map
