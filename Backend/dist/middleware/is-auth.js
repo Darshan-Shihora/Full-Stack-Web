@@ -21,7 +21,6 @@ const isAuth = (req, res, next) => {
         next();
     }
     catch (error) {
-        console.log(error);
         req.userId = "0";
         next();
         // res.status(StatusCodes.UNAUTHORIZED).send({

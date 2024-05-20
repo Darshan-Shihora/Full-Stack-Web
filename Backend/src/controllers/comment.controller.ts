@@ -63,7 +63,6 @@ export const getComment = async (
     const formattedDate = moment(com.created_at)
       .utcOffset("+00:00")
       .format("DD MMM YYYY hh:mm A");
-    console.log(formattedDate);
     com.created_at = formattedDate;
   });
 

@@ -56,7 +56,6 @@ const getComment = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
         const formattedDate = (0, moment_1.default)(com.created_at)
             .utcOffset("+00:00")
             .format("DD MMM YYYY hh:mm A");
-        console.log(formattedDate);
         com.created_at = formattedDate;
     });
     const commentsCount = yield comment_model_1.Comment.count({

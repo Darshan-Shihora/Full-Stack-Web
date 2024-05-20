@@ -24,21 +24,21 @@ const BlogItem: React.FC<{ blog: any }> = (props) => {
   useEffect(() => {
     const fetchComments = async () => {
       const token = localStorage.getItem("Token");
-      if (token) {
-        const response = await axios({
-          method: "GET",
-          url: `http://localhost:3001/comment/${props.blog.blog[0].blog_id}`,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setCommentCount(response.data.count);
-        setComments(response.data.data);
-        console.log(response.data.data);
-      }
+      // if (token) {
+      const response = await axios({
+        method: "GET",
+        url: `http://localhost:3001/comment/${props.blog.blog[0].blog_id}`,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setCommentCount(response.data.count);
+      setComments(response.data.data);
+      console.log(response.data.data);
+      // }
     };
     fetchComments();
-  }, [callBack]);
+  }, [callBack, props.blog.blog]);
 
   function deleteHandler() {
     const proceed = window.confirm("Are you sure you want to delete it?");
@@ -192,7 +192,7 @@ const BlogItem: React.FC<{ blog: any }> = (props) => {
               <div className="flex items-center relative">
                 <img className="size-12 mr-2 " src={img} alt="" />
                 <p className="text-gray-400 text-md">{comment.name}</p>
-                <p className="right-0 absolute pr-4 text-gray-400 text-md">
+                <p className="right-0 absolute pr-4 text-gray-400 text-sm">
                   {comment.created_at}
                 </p>
               </div>

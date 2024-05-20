@@ -12,9 +12,9 @@ import { storage } from "../index";
 
 const blogRouter = express.Router();
 
-blogRouter.get("/", isAuth, getAllBlog);
+blogRouter.get("/", isAuth ,getAllBlog);
 
-blogRouter.get("/blog/:blog_id", isAuth, getBlog);
+blogRouter.get("/blog/:blog_id",isAuth, getBlog);
 
 blogRouter.post(
   "/blog",
@@ -29,6 +29,7 @@ blogRouter.patch(
   multer({ storage: storage }).single("image"),
   editBlog
 );
+
 blogRouter.delete("/blog/:blog_id", isAuth, deleteBlog);
 
 export default blogRouter;

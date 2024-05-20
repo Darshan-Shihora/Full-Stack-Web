@@ -6,6 +6,6 @@ const commentRouter = express.Router()
 
 commentRouter.post('/comment/:blogId',isAuth, postComment)
 
-commentRouter.get('/comment/:blogId',isAuth, getComment)
+commentRouter.get('/comment/:blogId', getComment)
 
 export default commentRouter

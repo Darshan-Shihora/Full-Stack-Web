@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getLike = exports.postLike = void 0;
+exports.postLike = void 0;
 const likes_model_1 = require("../models/likes.model");
 const http_status_codes_1 = require("http-status-codes");
 const index_1 = require("../models/index");
@@ -98,38 +98,4 @@ const postLike = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.postLike = postLike;
-const getLike = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const blogId = req.params.blogId;
-    const response = yield index_1.sequelize.query(`select
-    blog.blog_id,
-    u.user_id,
-    u.name,
-    count(l.user_id) as likes,
-    CASE
-          WHEN EXISTS (
-              SELECT 1
-              FROM likes l2
-              WHERE l2.blog_id = blog.blog_id
-                AND l2.user_id = ${req.userId}
-          ) THEN 'false'
-          ELSE 'true'
-      END AS canBeLiked
-  from
-    blogs as blog
-  left join users as u on
-    blog.user_id = u.user_id
-  left join likes l on
-    l.blog_id = blog.blog_id
-    where blog.blog_id = :blogId
-    group by blog.blog_id;`, {
-        replacements: { blogId },
-        type: sequelize_1.QueryTypes.SELECT,
-        raw: true,
-    });
-    res.send({
-        message: "Liked a particular blog",
-        data: response,
-    });
-});
-exports.getLike = getLike;
 //# sourceMappingURL=like.controller.js.map

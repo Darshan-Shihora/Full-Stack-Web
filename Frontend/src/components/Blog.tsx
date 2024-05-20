@@ -2,8 +2,6 @@ import { Link, useNavigate } from "react-router-dom";
 import img from "../assests/icons8-administrator-male-96.png";
 import heartWithoutColor from "../assests/icons8-heart-noColor.png";
 import heartWithColor from "../assests/icons8-heart-withColor.png";
-import eyeImg from "../assests/icons8-eye-16.png";
-import messageImg from "../assests/icons8-message-16.png";
 import axios from "axios";
 import { useState } from "react";
 
@@ -82,13 +80,6 @@ const Blog: React.FC<{
         Click here to read the full blog
       </Link>
       <div className="border-t-2 flex justify-end mx-6 my-4 pt-3 relative">
-        {/* <p className="flex pr-4">
-          <img className="pr-[3px] w-6" src={eyeImg} alt="" />
-          100
-        </p>
-        <p className="flex">
-          <img className="pr-[4px] w-6" src={messageImg} alt="" />2
-        </p> */}
         <p className="flex">
           <button onClick={likesHandler}>
             <img

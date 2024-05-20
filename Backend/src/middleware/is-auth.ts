@@ -27,7 +27,6 @@ export const isAuth = (req: Request, res: Response, next: NextFunction) => {
     req.userId = decodedToken.userId;
     next();
   } catch (error) {
-    console.log(error);
     req.userId = "0";
     next();
     // res.status(StatusCodes.UNAUTHORIZED).send({
