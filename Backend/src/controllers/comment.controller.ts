@@ -41,6 +41,7 @@ export const getComment = async (
   const comment: comment[] = await sequelize.query(
     `
     select
+    c.comment_id,
     u.name,
     comment,
     c.created_at 

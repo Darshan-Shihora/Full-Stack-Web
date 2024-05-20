@@ -37,6 +37,7 @@ const getComment = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
     const { blogId } = req.params;
     const comment = yield index_1.sequelize.query(`
     select
+    c.comment_id,
     u.name,
     comment,
     c.created_at 
