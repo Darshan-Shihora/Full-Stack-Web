@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { Buffer } from "buffer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleLeft } from "@fortawesome/free-solid-svg-icons";
+import Comment from "./Comment";
 
 const BlogItem: React.FC<{ blog: any }> = (props) => {
   const [liked, setLiked] = useState(props.blog.blog[0].canBeLiked);
@@ -15,6 +16,7 @@ const BlogItem: React.FC<{ blog: any }> = (props) => {
   const [comments, setComments] = useState([]);
   const [callBack, setCallBack] = useState("");
   const [commentCount, setCommentCount] = useState(0);
+  const [editingIndex, setEditingIndex] = useState(null);
   const navigate = useNavigate();
   const submit = useSubmit();
   const imageBase64 = `${Buffer.from(props.blog.blog[0].image.data).toString(
@@ -94,6 +96,20 @@ const BlogItem: React.FC<{ blog: any }> = (props) => {
     } else {
       return navigate("../../login");
     }
+  };
+
+  // const saveComment = (index, newComment) => {
+  //   const updatedComments = comments.map((comment, i) =>
+  //     i === index ? newComment : comment
+  //   );
+  //   // console.log(updatedComments);
+
+  //   setComments(updatedComments);
+  //   setEditingIndex(null);
+  // };
+
+  const handleDoubleClick = (index) => {
+    setEditingIndex(index);
   };
 
   return (
@@ -193,10 +209,21 @@ const BlogItem: React.FC<{ blog: any }> = (props) => {
                 <img className="size-12 mr-2 " src={img} alt="" />
                 <p className="text-gray-400 text-md">{comment.name}</p>
                 <p className="right-0 absolute pr-4 text-gray-400 text-sm">
-                  {comment.created_at}
+                  {comment.updated_at}
                 </p>
               </div>
-              <li>{comment.comment}</li>
+              {/* <li>{comment.comment}</li> */}
+              <Comment
+                key={index}
+                comment={comment.comment}
+                commentId={comment.comment_id}
+                isEditing={
+                  localStorage.getItem("name") === comment.name
+                    ? editingIndex === comment.comment_id
+                    : false
+                }
+                onDoubleClick={() => handleDoubleClick(comment.comment_id)}
+              />
             </div>
           ))}
         </ul>

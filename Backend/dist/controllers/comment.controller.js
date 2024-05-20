@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getComment = exports.postComment = void 0;
+exports.editComment = exports.getComment = exports.postComment = void 0;
 const comment_model_1 = require("../models/comment.model");
 const http_status_codes_1 = require("http-status-codes");
 const index_1 = require("../models/index");
@@ -40,7 +40,8 @@ const getComment = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
     c.comment_id,
     u.name,
     comment,
-    c.created_at 
+    c.created_at,
+    c.updated_at 
   from
     comments c
   left join users u on
@@ -54,10 +55,14 @@ const getComment = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
         raw: true,
     });
     comment.map((com) => {
-        const formattedDate = (0, moment_1.default)(com.created_at)
+        const createdFormattedDate = (0, moment_1.default)(com.created_at)
             .utcOffset("+00:00")
             .format("DD MMM YYYY hh:mm A");
-        com.created_at = formattedDate;
+        com.created_at = createdFormattedDate;
+        const updatedFormattedDate = (0, moment_1.default)(com.updated_at)
+            .utcOffset("+00:00")
+            .format("DD MMM YYYY hh:mm A");
+        com.updated_at = updatedFormattedDate;
     });
     const commentsCount = yield comment_model_1.Comment.count({
         where: {
@@ -71,4 +76,26 @@ const getComment = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
     });
 });
 exports.getComment = getComment;
+const editComment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { comment } = req.body;
+    const { commentId } = req.params;
+    const editingComment = yield comment_model_1.Comment.findOne({
+        where: { comment_id: commentId },
+    });
+    if (editingComment) {
+        editingComment.comment = comment;
+        yield editingComment.save();
+        res.status(http_status_codes_1.StatusCodes.OK).send({
+            message: "Edited the comment",
+            data: editingComment,
+        });
+    }
+    else {
+        res.status(http_status_codes_1.StatusCodes.BAD_REQUEST).send({
+            message: "Comment can't be edit",
+            data: null,
+        });
+    }
+});
+exports.editComment = editComment;
 //# sourceMappingURL=comment.controller.js.map

@@ -30,6 +30,7 @@ type comment = {
   name: string;
   comment: string;
   created_at: string;
+  updated_at: string;
 };
 
 export const getComment = async (
@@ -44,7 +45,8 @@ export const getComment = async (
     c.comment_id,
     u.name,
     comment,
-    c.created_at 
+    c.created_at,
+    c.updated_at 
   from
     comments c
   left join users u on
@@ -61,10 +63,15 @@ export const getComment = async (
   );
 
   comment.map((com) => {
-    const formattedDate = moment(com.created_at)
+    const createdFormattedDate = moment(com.created_at)
       .utcOffset("+00:00")
       .format("DD MMM YYYY hh:mm A");
-    com.created_at = formattedDate;
+    com.created_at = createdFormattedDate;
+
+    const updatedFormattedDate = moment(com.updated_at)
+      .utcOffset("+00:00")
+      .format("DD MMM YYYY hh:mm A");
+    com.updated_at = updatedFormattedDate;
   });
 
   const commentsCount = await Comment.count({
@@ -77,4 +84,31 @@ export const getComment = async (
     data: comment,
     count: commentsCount,
   });
+};
+
+export const editComment = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { comment } = req.body;
+  const { commentId } = req.params;
+
+  const editingComment: any = await Comment.findOne({
+    where: { comment_id: commentId },
+  });
+
+  if (editingComment) {
+    editingComment.comment = comment;
+    await editingComment.save();
+    res.status(StatusCodes.OK).send({
+      message: "Edited the comment",
+      data: editingComment,
+    });
+  } else {
+    res.status(StatusCodes.BAD_REQUEST).send({
+      message: "Comment can't be edit",
+      data: null,
+    });
+  }
 };

@@ -1,11 +1,17 @@
-import express from 'express'
-import { getComment, postComment } from '../controllers/comment.controller'
-import { isAuth } from '../middleware/is-auth'
+import express from "express";
+import {
+  editComment,
+  getComment,
+  postComment,
+} from "../controllers/comment.controller";
+import { isAuth } from "../middleware/is-auth";
 
-const commentRouter = express.Router()
+const commentRouter = express.Router();
 
-commentRouter.post('/comment/:blogId',isAuth, postComment)
+commentRouter.post("/comment/:blogId", isAuth, postComment);
 
-commentRouter.get('/comment/:blogId',isAuth, getComment)
+commentRouter.get("/comment/:blogId", isAuth, getComment);
 
-export default commentRouter
+commentRouter.patch("/comment/:commentId", editComment);
+
+export default commentRouter;
