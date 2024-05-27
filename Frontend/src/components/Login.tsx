@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -15,6 +16,20 @@ function Login() {
     setPassword(event.target.value);
   };
 
+  const setCookie = (
+    name: string,
+    nameValue: string,
+    token: string,
+    tokenValue: string,
+    exdays: number
+  ) => {
+    const d = new Date();
+    d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
+    let expires = "expires=" + d.toUTCString();
+    document.cookie = name + "=" + nameValue + ";" + expires + ";path=/";
+    document.cookie = token + "=" + tokenValue + ";" + expires + ";path=/";
+  };
+
   const handleSubmission = async () => {
     try {
       const response = await axios.post("http://localhost:3001/login", {
@@ -23,8 +38,15 @@ function Login() {
       });
 
       if (response.status === 202) {
-        localStorage.setItem("name", response.data.data.name);
-        localStorage.setItem("Token", response.data.data.token);
+        // localStorage.setItem("name", response.data.data.name);
+        // localStorage.setItem("Token", response.data.data.token);
+        setCookie(
+          "UserName",
+          response.data.data.name,
+          "Token",
+          response.data.data.token,
+          1
+        );
         navigate("..");
       }
     } catch (error) {
@@ -89,5 +111,22 @@ function Login() {
     </div>
   );
 }
+
+export const getCookie = (cname: string) => {
+  let name = cname + "=";
+  let decodedCookie = decodeURIComponent(document.cookie);
+
+  let ca = decodedCookie.split(";");
+  for (let i = 0; i < ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) == " ") {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+};
 
 export default Login;

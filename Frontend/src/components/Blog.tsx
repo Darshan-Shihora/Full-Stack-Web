@@ -4,6 +4,7 @@ import heartWithoutColor from "../assests/icons8-heart-noColor.png";
 import heartWithColor from "../assests/icons8-heart-withColor.png";
 import axios from "axios";
 import { useState } from "react";
+import { getCookie } from "./Login";
 
 const Blog: React.FC<{
   id: string;
@@ -20,10 +21,11 @@ const Blog: React.FC<{
   const [liked, setLiked] = useState(props.canBeLiked);
   const [count, setCount] = useState(props.likes);
   const navigate = useNavigate();
+  const token = getCookie("Token");
 
   const likesHandler = async () => {
     try {
-      const token = localStorage.getItem("Token");
+      // const token = localStorage.getItem("Token");
       if (!token) {
         return navigate("../login");
       } else {

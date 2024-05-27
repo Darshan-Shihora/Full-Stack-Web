@@ -8,6 +8,7 @@ import {
 import BlogItem from "./BlogItem";
 import { Suspense } from "react";
 import axios from "axios";
+import { getCookie } from "./Login";
 
 function BlogDetail() {
   const blog: any = useRouteLoaderData("blog-detail");
@@ -23,7 +24,8 @@ function BlogDetail() {
 export default BlogDetail;
 
 async function loadEvent(id: string) {
-  const token = localStorage.getItem("Token");
+  // const token = localStorage.getItem("Token");
+  const token = getCookie("Token")
   try {
     const response = await axios({
       method: "GET",
@@ -51,7 +53,8 @@ export const action: ActionFunction = async ({ request, params }) => {
   const blogId = params.blogId;
   const url = `http://localhost:3001/blog/${blogId}`;
   const method = request.method;
-  const token = localStorage.getItem("Token");
+  // const token = localStorage.getItem("Token");
+  const token = getCookie("Token");
   try {
     const response = await axios({
       url: url,

@@ -6,9 +6,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
 import { Buffer } from "buffer";
 import img from "../assests/icons8-administrator-male-96.png";
+import { getCookie } from "./Login";
 
 type Blogs = {
-  blog_id: string
+  blog_id: string;
   image: string;
   name: string;
   title: string;
@@ -47,6 +48,9 @@ function BlogList() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [length, setLength] = useState(0);
   const [offset, setOffset] = useState(0);
+  const token = getCookie("Token");
+  // console.log(token);
+
   const handlePrevPage = () => {
     setOffset((prevOffset) => Math.max(0, prevOffset - 5));
   };
@@ -56,7 +60,7 @@ function BlogList() {
   };
 
   const getUserBlog = async (id) => {
-    const token = localStorage.getItem("Token");
+    // const token = localStorage.getItem("Token");
     try {
       const response = await axios({
         method: "GET",
@@ -96,7 +100,7 @@ function BlogList() {
     try {
       const fetchBlogs = async () => {
         try {
-          const token = localStorage.getItem("Token");
+          // const token = localStorage.getItem("Token");
 
           const blogresponse = await axios({
             method: "GET",
@@ -200,7 +204,7 @@ function BlogList() {
         </>
       ) : (
         <>
-          {localStorage.getItem("Token") ? (
+          {token ? (
             <NavLink
               to="new"
               className="bg-sky-500 w-32 my-4 p-4 text-xl block m-auto items-center text-center text-white hover:bg-sky-600 rounded"

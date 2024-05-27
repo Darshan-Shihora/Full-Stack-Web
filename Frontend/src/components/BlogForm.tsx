@@ -8,6 +8,7 @@ import {
   useNavigate,
   useNavigation,
 } from "react-router-dom";
+import { getCookie } from "./Login";
 const BlogForm: React.FC<{ method: FormMethod; blog: any }> = (props) => {
   const navigate = useNavigate();
   const navigation = useNavigation();
@@ -120,6 +121,7 @@ const BlogForm: React.FC<{ method: FormMethod; blog: any }> = (props) => {
 export default BlogForm;
 
 export const action: ActionFunction = async ({ request, params }) => {
+  const token = getCookie("Token")
   const method = request.method;
   const data = await request.formData();
 
@@ -129,7 +131,7 @@ export const action: ActionFunction = async ({ request, params }) => {
     date: data.get("date"),
     description: data.get("description"),
   };
-  const token = localStorage.getItem("Token");
+  // const token = localStorage.getItem("Token");
   let url = "http://localhost:3001/blog";
   if (method === "PATCH") {
     const blogId = params.blogId;

@@ -1,15 +1,22 @@
 import img from "../../src/assests/icons8-b-96.png";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { getCookie } from "../components/Login";
 
 function Header() {
   const navigate = useNavigate();
-  const [isAuthenticated, setisAuthenticated] = useState(
-    localStorage.getItem("Token")
-  );
+  const [isAuthenticated, setisAuthenticated] = useState(getCookie("Token"));
+
+  const removeCookie = (name: string, token: string) => {
+    document.cookie = `${name}=;`;
+    document.cookie = `${token}=;`;
+  };
+
   const logoutHandler = () => {
     setisAuthenticated(null);
-    localStorage.clear();
+    removeCookie("UserName", "Token");
+    // localStorage.clear();
+
     return navigate("/");
   };
   return (
@@ -53,7 +60,7 @@ function Header() {
       <div className="flex">
         {isAuthenticated ? (
           <div className="flex gap-4">
-            <p className=" py-2">{localStorage.getItem("name")}</p>
+            <p className=" py-2">{getCookie("UserName")}</p>
             <button
               className="p-3 text-center w-24 font-semibold text-white bg-gray-600 hover:bg-gray-500"
               onClick={logoutHandler}

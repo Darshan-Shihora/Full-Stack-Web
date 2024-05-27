@@ -7,7 +7,11 @@ function Footer() {
       <div className="text-start">
         <p className="font-bold text-2xl">About Me</p>
         <p className="text-md font-normal font-serif py-2">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda autem aliquam odio odit atque culpa debitis veniam tempore quia natus deserunt possimus iste ducimus nisi asperiores, at iure dolorum cumque eligendi. Mollitia optio sunt blanditiis culpa delectus, non consequuntur explicabo.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda
+          autem aliquam odio odit atque culpa debitis veniam tempore quia natus
+          deserunt possimus iste ducimus nisi asperiores, at iure dolorum cumque
+          eligendi. Mollitia optio sunt blanditiis culpa delectus, non
+          consequuntur explicabo.
         </p>
         <Link to="/about-me" className="underline">
           Read more

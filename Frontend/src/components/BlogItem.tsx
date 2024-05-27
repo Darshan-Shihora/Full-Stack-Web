@@ -8,6 +8,7 @@ import { Buffer } from "buffer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleLeft } from "@fortawesome/free-solid-svg-icons";
 import Comment from "./Comment";
+import { getCookie } from "./Login";
 
 const BlogItem: React.FC<{ blog: any }> = (props) => {
   const [liked, setLiked] = useState(props.blog.blog[0].canBeLiked);
@@ -25,7 +26,8 @@ const BlogItem: React.FC<{ blog: any }> = (props) => {
 
   useEffect(() => {
     const fetchComments = async () => {
-      const token = localStorage.getItem("Token");
+      // const token = localStorage.getItem("Token");
+      const token = getCookie("Token");
       // if (token) {
       const response = await axios({
         method: "GET",
@@ -52,7 +54,8 @@ const BlogItem: React.FC<{ blog: any }> = (props) => {
 
   const likesHandler = async () => {
     try {
-      const token = localStorage.getItem("Token");
+      // const token = localStorage.getItem("Token");
+      const token = getCookie("Token");
       if (!token) {
         return navigate("../../login");
       } else {
@@ -77,7 +80,8 @@ const BlogItem: React.FC<{ blog: any }> = (props) => {
   };
 
   const handleSubmit = async () => {
-    const token = localStorage.getItem("Token");
+    // const token = localStorage.getItem("Token");
+    const token = getCookie("Token");
     if (token) {
       if (comment.trim() !== "") {
         await axios({
@@ -127,23 +131,21 @@ const BlogItem: React.FC<{ blog: any }> = (props) => {
             </div>
           </div>
           <div className="mr-12">
-            {localStorage.getItem("name") === props.blog.blog[0].name ? (
-              <Link
-                to="edit"
-                className="mr-4 bg-sky-400 p-3 px-6 rounded text-white hover:bg-sky-600 text-md"
-              >
-                Edit
-              </Link>
-            ) : (
-              <></>
-            )}
-            {localStorage.getItem("name") === props.blog.blog[0].name ? (
-              <button
-                className="ml-4 bg-sky-400 p-3 px-4 rounded text-white hover:bg-sky-600 text-md"
-                onClick={deleteHandler}
-              >
-                Delete
-              </button>
+            {getCookie("UserName") === props.blog.blog[0].name ? (
+              <>
+                <Link
+                  to="edit"
+                  className="mr-4 bg-sky-400 p-3 px-6 rounded text-white hover:bg-sky-600 text-md"
+                >
+                  Edit
+                </Link>
+                <button
+                  className="ml-4 bg-sky-400 p-3 px-4 rounded text-white hover:bg-sky-600 text-md"
+                  onClick={deleteHandler}
+                >
+                  Delete
+                </button>
+              </>
             ) : (
               <></>
             )}
@@ -218,7 +220,7 @@ const BlogItem: React.FC<{ blog: any }> = (props) => {
                 comment={comment.comment}
                 commentId={comment.comment_id}
                 isEditing={
-                  localStorage.getItem("name") === comment.name
+                  getCookie("UserName") === comment.name
                     ? editingIndex === comment.comment_id
                     : false
                 }
