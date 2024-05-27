@@ -56,7 +56,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   // const token = localStorage.getItem("Token");
   const token = getCookie("Token");
   try {
-    const response = await axios({
+    await axios({
       url: url,
       headers: {
         Authorization: `Bearer ${token}`,

@@ -138,7 +138,7 @@ function BlogList() {
       left: 0,
       behavior: "smooth",
     });
-  }, [offset]);
+  }, [offset, token]);
 
   const blog = blogs.map((blog) => (
     <Blog
